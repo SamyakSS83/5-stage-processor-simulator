@@ -52,6 +52,7 @@ struct WB{
     bool do_i_wb;
 };
 
+set<int> yeh_saare_atke_hai;
 
 
 IF actual_IF, temp_IF;
