@@ -1,0 +1,9 @@
+addi x1, x0, 5
+addi x2, x0, 10
+beq x0, x0, 2
+addi x3, x0, 15
+addi x4, x0, 20
+add x5, x1, x2
+
+n
+30
