@@ -8,12 +8,13 @@
 #include <sstream>
 #include <iomanip>
 #include <cstring>
+using namespace std;
 
 // Debug macro - set to 1 to enable debug prints
 #define DEBUG_MODE 1
 
 #if DEBUG_MODE
-#define DEBUG_PRINT(msg) std::cout << "[DEBUG] " << msg << std::endl
+#define DEBUG_PRINT(msg) cout << "[DEBUG] " << msg << endl
 #else
 #define DEBUG_PRINT(msg)
 #endif
@@ -103,56 +104,56 @@ public:
     }
     
     // Parse a register name to register number
-    int parseRegister(const std::string& reg) {
+    int parseRegister(const string& reg) {
         // Remove any commas
-        std::string cleanReg = reg;
+        string cleanReg = reg;
         size_t commaPos = cleanReg.find(',');
-        if (commaPos != std::string::npos) {
+        if (commaPos != string::npos) {
             cleanReg = cleanReg.substr(0, commaPos);
         }
         
         if (regMap.find(cleanReg) != regMap.end()) {
             return regMap[cleanReg];
         } else {
-            std::cerr << "Unknown register: " << cleanReg << std::endl;
+            cerr << "Unknown register: " << cleanReg << endl;
             return 0;
         }
     }
     
     // Parse an immediate value
-    int parseImmediate(const std::string& imm) {
+    int parseImmediate(const string& imm) {
         // Remove any commas and parentheses
-        std::string cleanImm = imm;
+        string cleanImm = imm;
         size_t commaPos = cleanImm.find(',');
-        if (commaPos != std::string::npos) {
+        if (commaPos != string::npos) {
             cleanImm = cleanImm.substr(0, commaPos);
         }
         
         try {
             // Check if hex
             if (cleanImm.substr(0, 2) == "0x") {
-                return std::stoi(cleanImm, nullptr, 16);
+                return stoi(cleanImm, nullptr, 16);
             }
             // Otherwise decimal
-            return std::stoi(cleanImm);
-        } catch (std::exception& e) {
-            std::cerr << "Invalid immediate value: " << cleanImm << std::endl;
+            return stoi(cleanImm);
+        } catch (exception& e) {
+            cerr << "Invalid immediate value: " << cleanImm << endl;
             return 0;
         }
     }
     
     // Parse memory operand like 8(x1)
-    std::pair<int, int> parseMemOperand(const std::string& operand) {
+    pair<int, int> parseMemOperand(const string& operand) {
         size_t openParen = operand.find('(');
         size_t closeParen = operand.find(')');
         
-        if (openParen == std::string::npos || closeParen == std::string::npos) {
-            std::cerr << "Invalid memory operand: " << operand << std::endl;
+        if (openParen == string::npos || closeParen == string::npos) {
+            cerr << "Invalid memory operand: " << operand << endl;
             return {0, 0};
         }
         
-        std::string offsetStr = operand.substr(0, openParen);
-        std::string regStr = operand.substr(openParen + 1, closeParen - openParen - 1);
+        string offsetStr = operand.substr(0, openParen);
+        string regStr = operand.substr(openParen + 1, closeParen - openParen - 1);
         
         int offset = parseImmediate(offsetStr);
         int reg = parseRegister(regStr);
@@ -161,20 +162,20 @@ public:
     }
     
     // Assemble an instruction
-    uint32_t assemble(const std::string& line) {
+    uint32_t assemble(const string& line) {
         DEBUG_PRINT("Assembling: " << line);
         
-        std::istringstream iss(line);
-        std::string opcode, op1, op2, op3;
+        istringstream iss(line);
+        string opcode, op1, op2, op3;
         
         iss >> opcode;
         
         // Convert to lowercase
-        for (auto& c : opcode) c = std::tolower(c);
+        for (auto& c : opcode) c = tolower(c);
         
         // If opcode not found
         if (opcodeMap.find(opcode) == opcodeMap.end()) {
-            std::cerr << "Unknown opcode: " << opcode << std::endl;
+            cerr << "Unknown opcode: " << opcode << endl;
             return 0;
         }
         
@@ -317,13 +318,13 @@ public:
             }
         }
         
-        DEBUG_PRINT("Assembled instruction: 0x" << std::hex << instruction << std::dec);
+        DEBUG_PRINT("Assembled instruction: 0x" << hex << instruction << dec);
         return instruction;
     }
     
     // Assemble a program (multiple lines)
-    std::vector<uint32_t> assembleProgram(const std::vector<std::string>& program) {
-        std::vector<uint32_t> machineCode;
+    vector<uint32_t> assembleProgram(const vector<string>& program) {
+        vector<uint32_t> machineCode;
         
         for (const auto& line : program) {
             // Skip empty lines and comments
@@ -347,8 +348,8 @@ private:
         uint32_t third;   // funct7
     };
     
-    std::map<std::string, OpcodeInfo> opcodeMap;
-    std::map<std::string, int> regMap;
+    map<string, OpcodeInfo> opcodeMap;
+    map<string, int> regMap;
 };
 
 class RV32I_5Stage {
@@ -463,13 +464,13 @@ public:
     }
 
     // Load program into instruction memory
-    void load_program(const std::vector<uint32_t>& program, uint32_t start_addr = 0) {
+    void load_program(const vector<uint32_t>& program, uint32_t start_addr = 0) {
         DEBUG_PRINT("Loading program of " << program.size() << " instructions at address 0x" 
-                     << std::hex << start_addr << std::dec);
+                     << hex << start_addr << dec);
         for (size_t i = 0; i < program.size(); i++) {
             instruction_memory[start_addr + i * 4] = program[i];
-            DEBUG_PRINT("  Instruction " << i << " at 0x" << std::hex 
-                         << (start_addr + i * 4) << ": 0x" << program[i] << std::dec);
+            DEBUG_PRINT("  Instruction " << i << " at 0x" << hex 
+                         << (start_addr + i * 4) << ": 0x" << program[i] << dec);
         }
     }
 
@@ -477,8 +478,8 @@ public:
     uint32_t read_register(uint32_t index) const {
         if (index == 0) return 0; // x0 is hardwired to 0
         if (index < 32) {
-            DEBUG_PRINT("Reading register x" << index << " = 0x" << std::hex 
-                         << registers[index] << std::dec);
+            DEBUG_PRINT("Reading register x" << index << " = 0x" << hex 
+                         << registers[index] << dec);
             return registers[index];
         }
         DEBUG_PRINT("INVALID REGISTER READ: " << index);
@@ -487,8 +488,8 @@ public:
 
     void write_register(uint32_t index, uint32_t value) {
         if (index > 0 && index < 32) { // Can't write to x0
-            DEBUG_PRINT("Writing register x" << index << " = 0x" << std::hex 
-                         << value << std::dec);
+            DEBUG_PRINT("Writing register x" << index << " = 0x" << hex 
+                         << value << dec);
             registers[index] = value;
         } else if (index == 0) {
             DEBUG_PRINT("Attempted write to x0 (ignored)");
@@ -501,8 +502,8 @@ public:
     InstrType decode_instr_type(uint32_t instr) {
         uint32_t opcode = instr & 0x7F;
         
-        DEBUG_PRINT("Decoding instruction type with opcode 0x" << std::hex 
-                     << opcode << std::dec);
+        DEBUG_PRINT("Decoding instruction type with opcode 0x" << hex 
+                     << opcode << dec);
         
         switch (opcode) {
             case OPCODE_OP:
@@ -542,7 +543,7 @@ public:
                 imm = (instr >> 20) & 0xFFF;
                 // Sign extend
                 if (imm & 0x800) imm |= 0xFFFFF000;
-                DEBUG_PRINT("  I-type immediate: 0x" << std::hex << imm << std::dec);
+                DEBUG_PRINT("  I-type immediate: 0x" << hex << imm << dec);
                 break;
             }
                 
@@ -552,7 +553,7 @@ public:
                 imm |= (instr >> 7) & 0x1F;
                 // Sign extend
                 if (imm & 0x800) imm |= 0xFFFFF000;
-                DEBUG_PRINT("  S-type immediate: 0x" << std::hex << imm << std::dec);
+                DEBUG_PRINT("  S-type immediate: 0x" << hex << imm << dec);
                 break;
             }
                 
@@ -564,14 +565,14 @@ public:
                 imm |= ((instr >> 8) & 0xF) << 1;
                 // Sign extend
                 if (imm & 0x1000) imm |= 0xFFFFE000;
-                DEBUG_PRINT("  B-type immediate: 0x" << std::hex << imm << std::dec);
+                DEBUG_PRINT("  B-type immediate: 0x" << hex << imm << dec);
                 break;
             }
                 
             case InstrType::U: {
                 // U-type: [31:12]
                 imm = instr & 0xFFFFF000;
-                DEBUG_PRINT("  U-type immediate: 0x" << std::hex << imm << std::dec);
+                DEBUG_PRINT("  U-type immediate: 0x" << hex << imm << dec);
                 break;
             }
                 
@@ -583,7 +584,7 @@ public:
                 imm |= ((instr >> 21) & 0x3FF) << 1;
                 // Sign extend
                 if (imm & 0x100000) imm |= 0xFFF00000;
-                DEBUG_PRINT("  J-type immediate: 0x" << std::hex << imm << std::dec);
+                DEBUG_PRINT("  J-type immediate: 0x" << hex << imm << dec);
                 break;
             }
                 
@@ -616,19 +617,19 @@ public:
 
     uint32_t extract_funct3(uint32_t instr) {
         uint32_t funct3 = (instr >> 12) & 0x7;
-        DEBUG_PRINT("  funct3 = 0x" << std::hex << funct3 << std::dec);
+        DEBUG_PRINT("  funct3 = 0x" << hex << funct3 << dec);
         return funct3;
     }
 
     uint32_t extract_funct7(uint32_t instr) {
         uint32_t funct7 = (instr >> 25) & 0x7F;
-        DEBUG_PRINT("  funct7 = 0x" << std::hex << funct7 << std::dec);
+        DEBUG_PRINT("  funct7 = 0x" << hex << funct7 << dec);
         return funct7;
     }
 
     uint32_t extract_opcode(uint32_t instr) {
         uint32_t opcode = instr & 0x7F;
-        DEBUG_PRINT("  opcode = 0x" << std::hex << opcode << std::dec);
+        DEBUG_PRINT("  opcode = 0x" << hex << opcode << dec);
         return opcode;
     }
 
@@ -636,20 +637,20 @@ public:
     uint32_t execute_alu(uint32_t a, uint32_t b, ALUOp op) {
         uint32_t result = 0;
         
-        DEBUG_PRINT("ALU: a=0x" << std::hex << a << ", b=0x" << b << std::dec);
+        DEBUG_PRINT("ALU: a=0x" << hex << a << ", b=0x" << b << dec);
         
         switch (op) {
             case ALUOp::ADD:  
                 result = a + b; 
-                DEBUG_PRINT("  ADD: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  ADD: result=0x" << hex << result << dec);
                 break;
             case ALUOp::SUB:  
                 result = a - b; 
-                DEBUG_PRINT("  SUB: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  SUB: result=0x" << hex << result << dec);
                 break;
             case ALUOp::SLL:  
                 result = a << (b & 0x1F); 
-                DEBUG_PRINT("  SLL: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  SLL: result=0x" << hex << result << dec);
                 break;
             case ALUOp::SLT:  
                 result = static_cast<int32_t>(a) < static_cast<int32_t>(b) ? 1 : 0; 
@@ -661,23 +662,23 @@ public:
                 break;
             case ALUOp::XOR:  
                 result = a ^ b; 
-                DEBUG_PRINT("  XOR: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  XOR: result=0x" << hex << result << dec);
                 break;
             case ALUOp::SRL:  
                 result = a >> (b & 0x1F); 
-                DEBUG_PRINT("  SRL: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  SRL: result=0x" << hex << result << dec);
                 break;
             case ALUOp::SRA:  
                 result = static_cast<int32_t>(a) >> (b & 0x1F); 
-                DEBUG_PRINT("  SRA: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  SRA: result=0x" << hex << result << dec);
                 break;
             case ALUOp::OR:   
                 result = a | b; 
-                DEBUG_PRINT("  OR: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  OR: result=0x" << hex << result << dec);
                 break;
             case ALUOp::AND:  
                 result = a & b; 
-                DEBUG_PRINT("  AND: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  AND: result=0x" << hex << result << dec);
                 break;
             default: 
                 DEBUG_PRINT("  UNKNOWN ALU OP");
@@ -691,7 +692,7 @@ public:
     bool evaluate_branch(uint32_t a, uint32_t b, BranchCond cond) {
         bool result = false;
         
-        DEBUG_PRINT("Branch condition check: a=0x" << std::hex << a << ", b=0x" << b << std::dec);
+        DEBUG_PRINT("Branch condition check: a=0x" << hex << a << ", b=0x" << b << dec);
         
         switch (cond) {
             case BranchCond::EQ:   
@@ -741,15 +742,15 @@ public:
         uint32_t offset = addr & 0x3;
         uint32_t result = 0;
         
-        DEBUG_PRINT("Memory read: addr=0x" << std::hex << addr 
+        DEBUG_PRINT("Memory read: addr=0x" << hex << addr 
                     << ", aligned_addr=0x" << aligned_addr 
-                    << ", word=0x" << word << std::dec);
+                    << ", word=0x" << word << dec);
         
         switch (op) {
             case MemOp::LB: {
                 uint8_t byte = (word >> (offset * 8)) & 0xFF;
                 result = (byte & 0x80) ? (byte | 0xFFFFFF00) : byte;
-                DEBUG_PRINT("  LB: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  LB: result=0x" << hex << result << dec);
                 break;
             }
             case MemOp::LH: {
@@ -759,17 +760,17 @@ public:
                 }
                 uint16_t half = (word >> (offset * 8)) & 0xFFFF;
                 result = (half & 0x8000) ? (half | 0xFFFF0000) : half;
-                DEBUG_PRINT("  LH: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  LH: result=0x" << hex << result << dec);
                 break;
             }
             case MemOp::LW:
                 result = word;
-                DEBUG_PRINT("  LW: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  LW: result=0x" << hex << result << dec);
                 break;
             case MemOp::LBU: {
                 uint8_t byte = (word >> (offset * 8)) & 0xFF;
                 result = byte;
-                DEBUG_PRINT("  LBU: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  LBU: result=0x" << hex << result << dec);
                 break;
             }
             case MemOp::LHU: {
@@ -779,7 +780,7 @@ public:
                 }
                 uint16_t half = (word >> (offset * 8)) & 0xFFFF;
                 result = half;
-                DEBUG_PRINT("  LHU: result=0x" << std::hex << result << std::dec);
+                DEBUG_PRINT("  LHU: result=0x" << hex << result << dec);
                 break;
             }
             default:
@@ -795,15 +796,15 @@ public:
         uint32_t word = data_memory[aligned_addr];
         uint32_t offset = addr & 0x3;
         
-        DEBUG_PRINT("Memory write: addr=0x" << std::hex << addr 
+        DEBUG_PRINT("Memory write: addr=0x" << hex << addr 
                     << ", aligned_addr=0x" << aligned_addr 
-                    << ", value=0x" << value << std::dec);
+                    << ", value=0x" << value << dec);
         
         switch (op) {
             case MemOp::SB: {
                 uint32_t mask = ~(0xFF << (offset * 8));
                 word = (word & mask) | ((value & 0xFF) << (offset * 8));
-                DEBUG_PRINT("  SB: new word=0x" << std::hex << word << std::dec);
+                DEBUG_PRINT("  SB: new word=0x" << hex << word << dec);
                 break;
             }
             case MemOp::SH: {
@@ -813,12 +814,12 @@ public:
                 }
                 uint32_t mask = ~(0xFFFF << (offset * 8));
                 word = (word & mask) | ((value & 0xFFFF) << (offset * 8));
-                DEBUG_PRINT("  SH: new word=0x" << std::hex << word << std::dec);
+                DEBUG_PRINT("  SH: new word=0x" << hex << word << dec);
                 break;
             }
             case MemOp::SW:
                 word = value;
-                DEBUG_PRINT("  SW: new word=0x" << std::hex << word << std::dec);
+                DEBUG_PRINT("  SW: new word=0x" << hex << word << dec);
                 break;
             default:
                 DEBUG_PRINT("  UNKNOWN MEMORY WRITE OP");
@@ -834,8 +835,8 @@ public:
         
         // Check for branch/jump from EX stage
         if (ex_mem.valid && ex_mem.branch_taken) {
-            DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << std::hex 
-                        << ex_mem.branch_target << std::dec << " and invalidating pipeline");
+            DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
+                        << ex_mem.branch_target << dec << " and invalidating pipeline");
             pc = ex_mem.branch_target;
             // Invalidate earlier pipeline stages
             if_id.valid = false;
@@ -844,8 +845,8 @@ public:
         
         // Fetch instruction from memory
         uint32_t instr = instruction_memory[pc];
-        DEBUG_PRINT("  Fetched instruction: 0x" << std::hex << instr 
-                    << " from address 0x" << pc << std::dec);
+        DEBUG_PRINT("  Fetched instruction: 0x" << hex << instr 
+                    << " from address 0x" << pc << dec);
         
         // Update IF/ID register
         if_id.pc = pc;
@@ -855,7 +856,7 @@ public:
         
         // Increment PC
         pc += 4;
-        DEBUG_PRINT("  PC incremented to 0x" << std::hex << pc << std::dec);
+        DEBUG_PRINT("  PC incremented to 0x" << hex << pc << dec);
     }
 
     void instruction_decode() {
@@ -867,7 +868,7 @@ public:
         }
         
         uint32_t instr = if_id.instruction;
-        DEBUG_PRINT("  Decoding instruction: 0x" << std::hex << instr << std::dec);
+        DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
         
         uint32_t opcode = extract_opcode(instr);
         uint32_t funct3 = extract_funct3(instr);
@@ -889,8 +890,8 @@ public:
         BranchCond branch_cond = BranchCond::FALSE;
         MemOp mem_op = MemOp::NONE;
         
-        DEBUG_PRINT("  Setting control signals based on opcode 0x" << std::hex 
-                    << opcode << std::dec);
+        DEBUG_PRINT("  Setting control signals based on opcode 0x" << hex 
+                    << opcode << dec);
         
         switch (opcode) {
             case OPCODE_OP:  // R-type
@@ -1078,9 +1079,9 @@ public:
         uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
         uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
         
-        DEBUG_PRINT("  ALU inputs: in1=0x" << std::hex << alu_in1 << " (from " 
+        DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
                     << (id_ex.use_pc ? "PC" : "rs1") << "), in2=0x" << alu_in2 
-                    << " (from " << (id_ex.alu_src ? "imm" : "rs2") << ")" << std::dec);
+                    << " (from " << (id_ex.alu_src ? "imm" : "rs2") << ")" << dec);
         
         // Execute ALU operation
         uint32_t alu_result = execute_alu(alu_in1, alu_in2, id_ex.alu_op);
@@ -1099,10 +1100,10 @@ public:
                 // Calculate branch target
                 if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
                     branch_target = (id_ex.rs1_val + id_ex.imm) & ~1; // Clear lowest bit
-                    DEBUG_PRINT("  JALR branch target: 0x" << std::hex << branch_target << std::dec);
+                    DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
                 } else {
                     branch_target = id_ex.pc + id_ex.imm;
-                    DEBUG_PRINT("  Branch target: 0x" << std::hex << branch_target << std::dec);
+                    DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
                 }
             }
         }
@@ -1134,14 +1135,14 @@ public:
         
         // Memory read
         if (ex_mem.mem_read) {
-            DEBUG_PRINT("  Memory read at address 0x" << std::hex << ex_mem.alu_result << std::dec);
+            DEBUG_PRINT("  Memory read at address 0x" << hex << ex_mem.alu_result << dec);
             mem_data = read_memory(ex_mem.alu_result, ex_mem.mem_op);
         }
         
         // Memory write
         if (ex_mem.mem_write) {
-            DEBUG_PRINT("  Memory write at address 0x" << std::hex << ex_mem.alu_result 
-                        << " value 0x" << ex_mem.rs2_val << std::dec);
+            DEBUG_PRINT("  Memory write at address 0x" << hex << ex_mem.alu_result 
+                        << " value 0x" << ex_mem.rs2_val << dec);
             write_memory(ex_mem.alu_result, ex_mem.rs2_val, ex_mem.mem_op);
         }
         
@@ -1166,7 +1167,7 @@ public:
         // Write back to register file
         if (mem_wb.reg_write && mem_wb.rd != 0) {
             uint32_t write_data = mem_wb.mem_to_reg ? mem_wb.mem_data : mem_wb.alu_result;
-            DEBUG_PRINT("  Writing 0x" << std::hex << write_data << std::dec 
+            DEBUG_PRINT("  Writing 0x" << hex << write_data << dec 
                         << " to register x" << mem_wb.rd);
             write_register(mem_wb.rd, write_data);
         } else if (mem_wb.reg_write && mem_wb.rd == 0) {
@@ -1194,63 +1195,63 @@ public:
 
     // Run program for specified number of cycles
     void run(int cycles) {
-        std::cout << "Running for " << cycles << " cycles" << std::endl;
+        cout << "Running for " << cycles << " cycles" << endl;
         for (int i = 0; i < cycles; i++) {
             clock_cycle();
         }
-        std::cout << "Execution completed after " << cycles << " cycles" << std::endl;
+        cout << "Execution completed after " << cycles << " cycles" << endl;
     }
 
     // Dump registers and pipeline state for debugging
     void dump_state() {
-        std::cout << "======= PROCESSOR STATE =======" << std::endl;
-        std::cout << "Cycle count: " << cycle_count << std::endl;
-        std::cout << "PC: 0x" << std::hex << pc << std::dec << std::endl;
+        cout << "======= PROCESSOR STATE =======" << endl;
+        cout << "Cycle count: " << cycle_count << endl;
+        cout << "PC: 0x" << hex << pc << dec << endl;
         
-        std::cout << "\nRegisters:" << std::endl;
+        cout << "\nRegisters:" << endl;
         for (int i = 0; i < 32; i++) {
-            std::cout << "x" << std::setw(2) << std::setfill('0') << i << ": 0x" 
-                      << std::hex << std::setw(8) << std::setfill('0') << registers[i] << std::dec;
-            if (i % 4 == 3) std::cout << std::endl;
-            else std::cout << "\t";
+            cout << "x" << setw(2) << setfill('0') << i << ": 0x" 
+                      << hex << setw(8) << setfill('0') << registers[i] << dec;
+            if (i % 4 == 3) cout << endl;
+            else cout << "\t";
         }
         
-        std::cout << "\nPipeline State:" << std::endl;
-        std::cout << "IF/ID: valid=" << if_id.valid << " pc=0x" << std::hex << if_id.pc 
-                 << " instr=0x" << if_id.instruction << std::dec << std::endl;
-        std::cout << "ID/EX: valid=" << id_ex.valid << " pc=0x" << std::hex << id_ex.pc 
-                 << " rd=" << id_ex.rd << " alu_op=" << static_cast<int>(id_ex.alu_op) << std::dec << std::endl;
-        std::cout << "EX/MEM: valid=" << ex_mem.valid << " alu_result=0x" << std::hex 
-                 << ex_mem.alu_result << " rd=" << ex_mem.rd << std::dec << std::endl;
-        std::cout << "MEM/WB: valid=" << mem_wb.valid << " alu_result=0x" << std::hex 
-                 << mem_wb.alu_result << " rd=" << mem_wb.rd << std::dec << std::endl;
+        cout << "\nPipeline State:" << endl;
+        cout << "IF/ID: valid=" << if_id.valid << " pc=0x" << hex << if_id.pc 
+                 << " instr=0x" << if_id.instruction << dec << endl;
+        cout << "ID/EX: valid=" << id_ex.valid << " pc=0x" << hex << id_ex.pc 
+                 << " rd=" << id_ex.rd << " alu_op=" << static_cast<int>(id_ex.alu_op) << dec << endl;
+        cout << "EX/MEM: valid=" << ex_mem.valid << " alu_result=0x" << hex 
+                 << ex_mem.alu_result << " rd=" << ex_mem.rd << dec << endl;
+        cout << "MEM/WB: valid=" << mem_wb.valid << " alu_result=0x" << hex 
+                 << mem_wb.alu_result << " rd=" << mem_wb.rd << dec << endl;
         
-        std::cout << "\nData Memory (non-zero values):" << std::endl;
+        cout << "\nData Memory (non-zero values):" << endl;
         int memEntries = 0;
         for (size_t i = 0; i < data_memory.size(); i += 4) {
             if (data_memory[i] != 0) {
-                std::cout << "0x" << std::hex << std::setw(8) << i << ": 0x" 
-                          << std::setw(8) << data_memory[i] << std::dec << std::endl;
+                cout << "0x" << hex << setw(8) << i << ": 0x" 
+                          << setw(8) << data_memory[i] << dec << endl;
                 memEntries++;
                 if (memEntries >= 10) {
-                    std::cout << "... (more non-zero entries exist)" << std::endl;
+                    cout << "... (more non-zero entries exist)" << endl;
                     break;
                 }
             }
         }
-        std::cout << "===============================" << std::endl;
+        cout << "===============================" << endl;
     }
 
     void store_user_data(int addr, int value) {
-        DEBUG_PRINT("Storing user data at addr 0x" << std::hex << addr 
-                   << ": 0x" << value << std::dec);
+        DEBUG_PRINT("Storing user data at addr 0x" << hex << addr 
+                   << ": 0x" << value << dec);
         data_memory[addr] = value;
     }
 
 private:
     // Memory
-    std::vector<uint32_t> instruction_memory;
-    std::vector<uint32_t> data_memory;
+    vector<uint32_t> instruction_memory;
+    vector<uint32_t> data_memory;
     
     // Registers
     uint32_t registers[32];
@@ -1273,18 +1274,18 @@ int main() {
     RV32Assembler assembler;
     
     // Ask user for program input
-    std::cout << "RISC-V 5-stage Pipeline Simulator" << std::endl;
-    std::cout << "==================================" << std::endl;
-    std::cout << "Enter RISC-V assembly code, one instruction per line." << std::endl;
-    std::cout << "Enter an empty line to finish input." << std::endl;
+    cout << "RISC-V 5-stage Pipeline Simulator" << endl;
+    cout << "==================================" << endl;
+    cout << "Enter RISC-V assembly code, one instruction per line." << endl;
+    cout << "Enter an empty line to finish input." << endl;
     
-    std::vector<std::string> assembly_lines;
-    std::string line;
+    vector<string> assembly_lines;
+    string line;
     
-    std::cout << "\nEnter program:" << std::endl;
+    cout << "\nEnter program:" << endl;
     while (true) {
-        std::cout << assembly_lines.size() + 1 << "> ";
-        std::getline(std::cin, line);
+        cout << assembly_lines.size() + 1 << "> ";
+        getline(cin, line);
         
         // Remove leading and trailing whitespace
         line.erase(0, line.find_first_not_of(" \t"));
@@ -1298,7 +1299,7 @@ int main() {
     }
     
     if (assembly_lines.empty()) {
-        std::cout << "No instructions entered. Using default program." << std::endl;
+        cout << "No instructions entered. Using default program." << endl;
         assembly_lines = {
             "addi x1, x0, 1",      // x1 = 1 (i)
             "addi x2, x0, 0",      // x2 = 0 (sum)
@@ -1311,26 +1312,26 @@ int main() {
     }
     
     // Assemble the program
-    std::vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
+    vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
     
     // Load program into processor memory
     cpu.load_program(machine_code);
     
     // Ask for input data to store in memory
-    std::cout << "\nDo you want to store data in memory? (y/n): ";
+    cout << "\nDo you want to store data in memory? (y/n): ";
     char choice;
-    std::cin >> choice;
+    cin >> choice;
     if (choice == 'y' || choice == 'Y') {
         int dataCount;
-        std::cout << "How many data values do you want to store? ";
-        std::cin >> dataCount;
+        cout << "How many data values do you want to store? ";
+        cin >> dataCount;
         
         for (int i = 0; i < dataCount; i++) {
             int addr, value;
-            std::cout << "Enter memory address for data " << i+1 << " (decimal): ";
-            std::cin >> addr;
-            std::cout << "Enter value for data " << i+1 << " (decimal): ";
-            std::cin >> value;
+            cout << "Enter memory address for data " << i+1 << " (decimal): ";
+            cin >> addr;
+            cout << "Enter value for data " << i+1 << " (decimal): ";
+            cin >> value;
             
             cpu.store_user_data(addr, value);
         }
@@ -1338,8 +1339,8 @@ int main() {
     
     // Ask for number of cycles to run
     int cycles;
-    std::cout << "\nEnter number of cycles to run: ";
-    std::cin >> cycles;
+    cout << "\nEnter number of cycles to run: ";
+    cin >> cycles;
     
     // Run the simulation
     cpu.run(cycles);
