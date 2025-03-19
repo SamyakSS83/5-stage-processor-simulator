@@ -851,6 +851,7 @@ public:
         if_id.pc = pc;
         if_id.instruction = instr;
         if_id.valid = true;
+        ex_mem.branch_taken = false; // Reset branch taken flag
         
         // Increment PC
         pc += 4;
