@@ -830,9 +830,34 @@ public:
     }
 
     // Pipeline stages implementation
-    void instruction_fetch() {
+    void instruction_fetch(bool enable_forwarding = true) {
         DEBUG_PRINT("STAGE: Instruction Fetch");
+
+    uint32_t rs1 = extract_rs1(if_id.instruction);
+    uint32_t rs2 = extract_rs2(if_id.instruction);
+
+    if(!enable_forwarding){
+    bool stall = false;
         
+    if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
+        if (ex_mem.rd == rs1 || ex_mem.rd == rs2) {
+            stall = true;
+        }
+    }
+    
+    // Check if we need data from MEM/WB stage
+    if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
+        if (mem_wb.rd == rs1 || mem_wb.rd == rs2) {
+            stall = true;
+        }
+    }
+    
+    // If stalling, don't update PC or IF/ID register
+    if (stall) {
+        DEBUG_PRINT("  STALLING: PC not updated due to data hazard");
+        return;
+    }}
+
         // Check for branch/jump from EX stage
         if (ex_mem.valid && ex_mem.branch_taken) {
             DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
@@ -859,7 +884,7 @@ public:
         DEBUG_PRINT("  PC incremented to 0x" << hex << pc << dec);
     }
 
-    void instruction_decode() {
+    void instruction_decode(bool enable_forwarding = true) {
         DEBUG_PRINT("STAGE: Instruction Decode");
         
         if (!if_id.valid) {
@@ -1022,7 +1047,8 @@ public:
         uint32_t rs2_val = read_register(rs2);
         
         // Forward data if there's a RAW hazard
-        // From EX/MEM stage
+        // // From EX/MEM stage
+        if (enable_forwarding) {
         if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
             if (ex_mem.rd == rs1) {
                 DEBUG_PRINT("  FORWARDING: EX/MEM -> rs1 (x" << rs1 << ")");
@@ -1034,7 +1060,7 @@ public:
             }
         }
         
-        // From MEM/WB stage
+        // // From MEM/WB stage
         if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
             uint32_t wb_data = mem_wb.mem_to_reg ? mem_wb.mem_data : mem_wb.alu_result;
             if (mem_wb.rd == rs1 && !(ex_mem.valid && ex_mem.reg_write && ex_mem.rd == rs1)) {
@@ -1046,7 +1072,45 @@ public:
                 rs2_val = wb_data;
             }
         }
-        
+    }
+        if(!enable_forwarding){
+        bool stall = false;
+        // Check for data hazards
+        if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
+            printf("Control Signals:");
+            printf("%d ", ex_mem.valid);
+            printf("%d ", ex_mem.reg_write);
+            printf("%d\n", ex_mem.rd);
+            printf("%d\n", ex_mem.rd&& ex_mem.valid && ex_mem.reg_write);
+            if (ex_mem.rd == rs1) {
+                DEBUG_PRINT("  Data hazard detected: EX/MEM -> rs1 (x" << rs1 << ")");
+                stall = true;
+            }
+            if (ex_mem.rd == rs2) {
+                DEBUG_PRINT("  Data hazard detected: EX/MEM -> rs2 (x" << rs2 << ")");
+                stall = true;
+            }
+        }
+
+        if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
+            printf("Control Signals:");
+            printf("%d ", mem_wb.valid);
+            printf("%d ", mem_wb.reg_write);
+            printf("%d\n", mem_wb.rd);
+            printf("%d\n", mem_wb.rd&& mem_wb.valid && mem_wb.reg_write);
+            if (mem_wb.rd == rs1 || mem_wb.rd == rs2) {
+                DEBUG_PRINT("  DATA HAZARD DETECTED: MEM/WB stage writing to x" << mem_wb.rd 
+                            << ", needed by current instruction");
+                stall = true;
+            }
+        }
+
+        if (stall) {
+            DEBUG_PRINT("  STALLING: inserting NOP into pipeline");
+            id_ex.valid = false;
+            return;
+        }}
+
         // Update ID/EX register
         DEBUG_PRINT("  Updating ID/EX register");
         id_ex.pc = if_id.pc;
@@ -1180,13 +1244,13 @@ public:
     // Run single clock cycle
     void clock_cycle() {
         DEBUG_PRINT("======= BEGIN CYCLE " << cycle_count + 1 << " =======");
-        
+        bool forwarded = true;
         // Pipeline stages must execute in reverse order to prevent data loss
         write_back();
         memory_access();
         execute();
-        instruction_decode();
-        instruction_fetch();
+        instruction_decode(forwarded);
+        instruction_fetch(forwarded);
         
         cycle_count++;
         
