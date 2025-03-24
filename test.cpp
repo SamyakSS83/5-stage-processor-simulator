@@ -821,6 +821,8 @@ public:
         data_memory[aligned_addr] = word;
     }
 
+
+    bool stall_code = false;
     // Pipeline stages implementation
     void instruction_fetch(bool enable_forwarding = true) {
         DEBUG_PRINT("STAGE: Instruction Fetch");
@@ -834,6 +836,7 @@ public:
     if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
         if (ex_mem.rd == rs1 || ex_mem.rd == rs2) {
             stall = true;
+            stall_code = true;
         }
     }
     
@@ -841,11 +844,12 @@ public:
     if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
         if (mem_wb.rd == rs1 || mem_wb.rd == rs2) {
             stall = true;
+            stall_code = true;
         }
     }
     
     // If stalling, don't update PC or IF/ID register
-    if (stall) {
+    if (stall_code) {
         DEBUG_PRINT("  STALLING: PC not updated due to data hazard");
         return;
     }}
@@ -874,6 +878,7 @@ public:
         // Increment PC
         pc += 4;
         DEBUG_PRINT("  PC incremented to 0x" << hex << pc << dec);
+        printf("Stall code: %d\n", stall_code);
     }
 
     void instruction_decode(bool enable_forwarding = true) {
@@ -1040,31 +1045,32 @@ public:
         
         // Forward data if there's a RAW hazard
         // // From EX/MEM stage
-        if (enable_forwarding) {
-        if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
-            if (ex_mem.rd == rs1) {
-                DEBUG_PRINT("  FORWARDING: EX/MEM -> rs1 (x" << rs1 << ")");
-                rs1_val = ex_mem.alu_result;
+        if (enable_forwarding) 
+        {
+            if (ex_mem.valid && ex_mem.reg_write && ex_mem.rd != 0) {
+                if (ex_mem.rd == rs1) {
+                    DEBUG_PRINT("  FORWARDING: EX/MEM -> rs1 (x" << rs1 << ")");
+                    rs1_val = ex_mem.alu_result;
+                }
+                if (ex_mem.rd == rs2) {
+                    DEBUG_PRINT("  FORWARDING: EX/MEM -> rs2 (x" << rs2 << ")");
+                    rs2_val = ex_mem.alu_result;
+                }
             }
-            if (ex_mem.rd == rs2) {
-                DEBUG_PRINT("  FORWARDING: EX/MEM -> rs2 (x" << rs2 << ")");
-                rs2_val = ex_mem.alu_result;
+            
+            // // From MEM/WB stage
+            if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
+                uint32_t wb_data = mem_wb.mem_to_reg ? mem_wb.mem_data : mem_wb.alu_result;
+                if (mem_wb.rd == rs1 && !(ex_mem.valid && ex_mem.reg_write && ex_mem.rd == rs1)) {
+                    DEBUG_PRINT("  FORWARDING: MEM/WB -> rs1 (x" << rs1 << ")");
+                    rs1_val = wb_data;
+                }
+                if (mem_wb.rd == rs2 && !(ex_mem.valid && ex_mem.reg_write && ex_mem.rd == rs2)) {
+                    DEBUG_PRINT("  FORWARDING: MEM/WB -> rs2 (x" << rs2 << ")");
+                    rs2_val = wb_data;
+                }
             }
         }
-        
-        // // From MEM/WB stage
-        if (mem_wb.valid && mem_wb.reg_write && mem_wb.rd != 0) {
-            uint32_t wb_data = mem_wb.mem_to_reg ? mem_wb.mem_data : mem_wb.alu_result;
-            if (mem_wb.rd == rs1 && !(ex_mem.valid && ex_mem.reg_write && ex_mem.rd == rs1)) {
-                DEBUG_PRINT("  FORWARDING: MEM/WB -> rs1 (x" << rs1 << ")");
-                rs1_val = wb_data;
-            }
-            if (mem_wb.rd == rs2 && !(ex_mem.valid && ex_mem.reg_write && ex_mem.rd == rs2)) {
-                DEBUG_PRINT("  FORWARDING: MEM/WB -> rs2 (x" << rs2 << ")");
-                rs2_val = wb_data;
-            }
-        }
-    }
         if(!enable_forwarding){
         bool stall = false;
         // Check for data hazards
