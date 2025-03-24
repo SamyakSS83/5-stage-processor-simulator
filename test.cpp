@@ -1,13 +1,5 @@
-#include <iostream>
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <array>
-#include <memory>
-#include <map>
-#include <sstream>
-#include <iomanip>
-#include <cstring>
+#include<bits/stdc++.h>
+#include<fstream>
 using namespace std;
 
 // Debug macro - set to 1 to enable debug prints
@@ -1244,7 +1236,7 @@ public:
     // Run single clock cycle
     void clock_cycle() {
         DEBUG_PRINT("======= BEGIN CYCLE " << cycle_count + 1 << " =======");
-        bool forwarded = true;
+        bool forwarded = false;
         // Pipeline stages must execute in reverse order to prevent data loss
         write_back();
         memory_access();
@@ -1376,30 +1368,31 @@ int main() {
     }
     
     // Assemble the program
+    // make change here 1.0000
     vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
     
     // Load program into processor memory
     cpu.load_program(machine_code);
     
-    // Ask for input data to store in memory
-    cout << "\nDo you want to store data in memory? (y/n): ";
-    char choice;
-    cin >> choice;
-    if (choice == 'y' || choice == 'Y') {
-        int dataCount;
-        cout << "How many data values do you want to store? ";
-        cin >> dataCount;
+    // // Ask for input data to store in memory
+    // cout << "\nDo you want to store data in memory? (y/n): ";
+    // char choice;
+    // cin >> choice;
+    // if (choice == 'y' || choice == 'Y') {
+    //     int dataCount;
+    //     cout << "How many data values do you want to store? ";
+    //     cin >> dataCount;
         
-        for (int i = 0; i < dataCount; i++) {
-            int addr, value;
-            cout << "Enter memory address for data " << i+1 << " (decimal): ";
-            cin >> addr;
-            cout << "Enter value for data " << i+1 << " (decimal): ";
-            cin >> value;
+    //     for (int i = 0; i < dataCount; i++) {
+    //         int addr, value;
+    //         cout << "Enter memory address for data " << i+1 << " (decimal): ";
+    //         cin >> addr;
+    //         cout << "Enter value for data " << i+1 << " (decimal): ";
+    //         cin >> value;
             
-            cpu.store_user_data(addr, value);
-        }
-    }
+    //         cpu.store_user_data(addr, value);
+    //     }
+    // }
     
     // Ask for number of cycles to run
     int cycles;
