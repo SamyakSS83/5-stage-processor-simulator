@@ -1,4 +1,11 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<map>
+#include<bitset>
+#include<string>
+#include<sstream>
+#include<utility>
+#include<iomanip>
 using namespace std;
 
 // Debug macro - set to 1 to enable debug prints
