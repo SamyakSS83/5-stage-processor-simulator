@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include<cstdint>
 using namespace std;
-
+ 
 #define DEBUG_MODE 0
 
 #if DEBUG_MODE
@@ -85,6 +85,7 @@ class RV32I_5Stage {
         };
     
         struct MEM_WB_Reg {
+            uint32_t pc;
             uint32_t alu_result;
             uint32_t mem_data;
             uint32_t rd;
@@ -94,7 +95,7 @@ class RV32I_5Stage {
         };
     
         // Constructor
-        RV32I_5Stage(uint32_t mem_size, bool enable)://default is forwarding enabled
+        RV32I_5Stage(uint32_t mem_size, bool enable):
             instruction_memory(mem_size, 0),
             data_memory(mem_size, 0),
             pc(0),
@@ -104,7 +105,7 @@ class RV32I_5Stage {
             id_needs_flush(false),
             pending_branch_target(0),
             stall_just_resolved(false),
-            enable_forwarding(0) {
+            enable_forwarding(enable) {
             
             // Initialize registers to 0
             for (int i = 0; i < 32; i++) {
@@ -519,6 +520,7 @@ class RV32I_5Stage {
                                 << " from address 0x" << pc << dec);
                     
                     // Update IF/ID register
+                    cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;
                     if_id.pc = pc;
                     if_id.instruction = instr;
                     if_id.valid = true;
@@ -544,7 +546,7 @@ class RV32I_5Stage {
             uint32_t instr = instruction_memory[pc];
             DEBUG_PRINT("  Fetched instruction: 0x" << hex << instr 
                         << " from address 0x" << pc << dec);
-            
+             cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
             if_id.instruction = instr;
@@ -559,8 +561,9 @@ class RV32I_5Stage {
     
         void instruction_decode() {
             DEBUG_PRINT("STAGE: Instruction Decode");
-    
-            if (!enable_forwarding) {        
+            
+            if (!enable_forwarding) {       
+                cout << "not forwarding " << endl; 
                 if (!if_id.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
                     id_ex.valid = false;
@@ -568,6 +571,9 @@ class RV32I_5Stage {
                 }
                 
                 uint32_t instr = if_id.instruction;
+                uint32_t pc_1 = if_id.pc;
+
+                cout << "pc: " << pc_1 << " stage: " << "ID " << "cycle " << cycle_count << endl ;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
                 
                 uint32_t opcode = extract_opcode(instr);
@@ -835,8 +841,9 @@ class RV32I_5Stage {
                 }
                 
                 uint32_t instr = if_id.instruction;
+                uint32_t pc_1 = if_id.pc;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
-                
+                cout << "pc: " << pc_1 << "stage: " << "ID" << " cycle " << cycle_count << endl;
                 uint32_t opcode = extract_opcode(instr);
                 uint32_t funct3 = extract_funct3(instr);
                 uint32_t funct7 = extract_funct7(instr);
@@ -1037,18 +1044,23 @@ class RV32I_5Stage {
     
         void execute() {
             DEBUG_PRINT("STAGE: Execute");
+            uint32_t pc_1 = id_ex.pc;
     
             if (!enable_forwarding) {
                 
                 if (!id_ex.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
                     ex_mem.valid = false;
+                    cout << "returning" << endl;
                     return;
                 }
+
                 
-                // Calculate ALU inputs
+                // Calculate ALU input
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
+
+                cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
                             << (id_ex.use_pc ? "PC" : "rs1") << "), in2=0x" << alu_in2 
@@ -1077,12 +1089,15 @@ class RV32I_5Stage {
             else {
                 if (!id_ex.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
+                    cout << "returning" << endl;
                     return;
                 }
                 
                 // Calculate ALU inputs
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
+
+                cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
                             << (id_ex.use_pc ? "PC" : "rs1") << "), in2=0x" << alu_in2 
@@ -1141,6 +1156,9 @@ class RV32I_5Stage {
             }
             
             uint32_t mem_data = 0;
+
+            uint32_t pc_1  = ex_mem.pc;
+            cout << "pc: " << pc_1  << " stage: " << "MemOP" << " cycle: " << cycle_count << endl;
             
             // Memory read
             if (ex_mem.mem_read) {
@@ -1157,6 +1175,7 @@ class RV32I_5Stage {
             
             // Update MEM/WB register
             DEBUG_PRINT("  Updating MEM/WB register");
+            mem_wb.pc = ex_mem.pc;
             mem_wb.alu_result = ex_mem.alu_result;
             mem_wb.mem_data = mem_data;
             mem_wb.rd = ex_mem.rd;
@@ -1172,6 +1191,9 @@ class RV32I_5Stage {
                 DEBUG_PRINT("  Pipeline stage invalid - skipping");
                 return;
             }
+
+            uint32_t pc_1  = mem_wb.pc;
+            cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
             
             // Write back to register file
             if (mem_wb.reg_write && mem_wb.rd != 0) {
@@ -1185,7 +1207,6 @@ class RV32I_5Stage {
                 DEBUG_PRINT("  No register write");
             }
         }
-    
         // Run single clock cycle
         void clock_cycle() {
             DEBUG_PRINT("======= BEGIN CYCLE " << cycle_count + 1 << " =======");
@@ -1209,8 +1230,8 @@ class RV32I_5Stage {
             
             DEBUG_PRINT("======= END CYCLE " << cycle_count << " =======\n");
         }
-    
-        // Run program for specified number of cycles
+        
+            // Run program for specified number of cycles
         void run(int cycles) {
             cout << "Running for " << cycles << " cycles" << endl;
             for (int i = 0; i < cycles; i++) {
@@ -1218,7 +1239,7 @@ class RV32I_5Stage {
             }
             cout << "Execution completed after " << cycles << " cycles" << endl;
         }
-    
+
         // Dump registers and pipeline state for debugging
         void dump_state() {
             cout << "======= PROCESSOR STATE =======" << endl;
