@@ -2,15 +2,6 @@
 #include "risc_v_assembler.hpp"
 using namespace std;
 
-// Debug macro - set to 1 to enable debug prints
-#define DEBUG_MODE 1
-
-#if DEBUG_MODE
-#define DEBUG_PRINT(msg) cout << "[DEBUG] " << msg << endl
-#else
-#define DEBUG_PRINT(msg)
-#endif
-
 /* RISC-V Assembler */
 
 int main() {
