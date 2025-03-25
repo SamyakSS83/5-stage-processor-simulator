@@ -1,11 +1,4 @@
-#include<iostream>
-#include<vector>
-#include<map>
-#include<bitset>
-#include<string>
-#include<sstream>
-#include<utility>
-#include<iomanip>
+#include<bits/stdc++.h>
 
 using namespace std;
 
@@ -179,11 +172,16 @@ public:
         }
         
         auto& opcodeInfo = opcodeMap[opcode];
+
         uint32_t baseOpcode = opcodeInfo.first;
         uint32_t funct3 = opcodeInfo.second;
         uint32_t funct7 = opcodeInfo.third;
         
         uint32_t instruction = baseOpcode; // Set opcode bits
+        if (opcode == "mv") { 
+            opcode = "addi"; //mv is just an alias of addi with imm value 0
+            op3 = "0";
+        }
         
         // Parse operands based on instruction type
         if (opcode == "lui" || opcode == "auipc") {
@@ -312,6 +310,7 @@ public:
                 instruction |= (funct7 << 25);
             } else {
                 // I-type
+                cout << "op3: " << op3 << endl;
                 int imm = parseImmediate(op3);
                 instruction |= ((imm & 0xFFF) << 20);
             }

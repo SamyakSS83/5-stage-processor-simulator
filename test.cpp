@@ -1,11 +1,4 @@
-#include<iostream>
-#include<vector>
-#include<map>
-#include<bitset>
-#include<string>
-#include<sstream>
-#include<utility>
-#include<iomanip>
+#include<bits/stdc++.h>
 using namespace std;
 
 // Debug macro - set to 1 to enable debug prints
@@ -33,7 +26,7 @@ public:
         opcodeMap["or"] = {0x33, 6, 0x0};
         opcodeMap["and"] = {0x33, 7, 0x0};
         
-        opcodeMap["addi"] = {0x13, 0, 0x0};
+        opcodeMap["addi"] = {0x13, 0, 0x0}; opcodeMap["mv"] = {0x13, 0, 0x0};
         opcodeMap["slti"] = {0x13, 2, 0x0};
         opcodeMap["sltiu"] = {0x13, 3, 0x0};
         opcodeMap["xori"] = {0x13, 4, 0x0};
@@ -167,6 +160,7 @@ public:
         string opcode, op1, op2, op3;
         
         iss >> opcode;
+        cout << "received opcode: " << opcode << endl;
         
         // Convert to lowercase
         for (auto& c : opcode) c = tolower(c);
@@ -183,6 +177,12 @@ public:
         uint32_t funct7 = opcodeInfo.third;
         
         uint32_t instruction = baseOpcode; // Set opcode bits
+
+        if (opcode == "mv") {
+            cout << "opcode mv found" <<endl;
+            opcode = "addi"; //mv is just an alias of addi with imm value 0
+            op3 = "0";
+        }
         
         // Parse operands based on instruction type
         if (opcode == "lui" || opcode == "auipc") {
@@ -239,7 +239,8 @@ public:
             b_imm |= ((imm >> 11) & 0x1) << 7;     // imm[11]
             instruction |= b_imm;
         }
-        else if (opcode.substr(0, 1) == "s") {
+        else if (opcode.substr(0, 1) == "s") { 
+            cout << "line 245 executed" << endl;
             if (opcode == "slli" || opcode == "srli" || opcode == "srai") {
                 // I-type shift: slli rd, rs1, shamt
                 iss >> op1 >> op2 >> op3;
@@ -267,8 +268,8 @@ public:
                 instruction |= ((offset & 0x1F) << 7);        // imm[4:0]
                 instruction |= (((offset >> 5) & 0x7F) << 25); // imm[11:5]
             } 
-            else {
-                // R-type: add rd, rs1, rs2
+            else { // looks ok so far
+                // R-type: sub rd, rs1, rs2
                 iss >> op1 >> op2 >> op3;
                 int rd = parseRegister(op1);
                 int rs1 = parseRegister(op2);
@@ -350,7 +351,7 @@ private:
     map<string, int> regMap;
 };
 
-class RV32I_5Stage {
+class RV32I_5Stage { // add mv instruction
 public:
     // Constants for RISC-V instruction formats and opcodes
     static constexpr uint32_t OPCODE_LOAD      = 0b0000011;
@@ -462,11 +463,11 @@ public:
     }
 
     // Load program into instruction memory
-    void load_program(const vector<uint32_t>& program, uint32_t start_addr = 0) {
+    void load_program(vector<uint32_t>& program, uint32_t start_addr = 0) {
         DEBUG_PRINT("Loading program of " << program.size() << " instructions at address 0x" 
                      << hex << start_addr << dec);
         for (size_t i = 0; i < program.size(); i++) {
-            instruction_memory[start_addr + i * 4] = program[i];
+            instruction_memory[start_addr + i * 4] = program[i]; //potential waste of memory
             DEBUG_PRINT("  Instruction " << i << " at 0x" << hex 
                          << (start_addr + i * 4) << ": 0x" << program[i] << dec);
         }
@@ -498,7 +499,7 @@ public:
 
     // Instruction decoder
     InstrType decode_instr_type(uint32_t instr) {
-        uint32_t opcode = instr & 0x7F;
+        uint32_t opcode = instr & 0x7F; // opcode bits = LS 7 bits
         
         DEBUG_PRINT("Decoding instruction type with opcode 0x" << hex 
                      << opcode << dec);
@@ -527,6 +528,7 @@ public:
                 return InstrType::J;
             default:
                 DEBUG_PRINT("  Instruction type: UNKNOWN");
+                // should exit the program here
                 return InstrType::UNKNOWN;
         }
     }
@@ -539,7 +541,7 @@ public:
             case InstrType::I: {
                 // I-type: [31:20]
                 imm = (instr >> 20) & 0xFFF;
-                // Sign extend
+                // Sign extend --> if imm is negative then extend the sign bit
                 if (imm & 0x800) imm |= 0xFFFFF000;
                 DEBUG_PRINT("  I-type immediate: 0x" << hex << imm << dec);
                 break;
