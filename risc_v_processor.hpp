@@ -2,7 +2,7 @@
 #include<cstdint>
 using namespace std;
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[DEBUG] " << msg << endl
@@ -200,11 +200,12 @@ class RV32I_5Stage {
         // Immediate value extraction based on instruction type
         uint32_t extract_immediate(uint32_t instr, InstrType type) {
             uint32_t imm = 0;
-            
+         
             switch (type) {
                 case InstrType::I: {
                     // I-type: [31:20]
-                    imm = (instr >> 20) & 0xFFF;
+                    imm = (instr >> 20) ;
+                   
                     // Sign extend
                     if (imm & 0x800) imm |= 0xFFFFF000;
                     DEBUG_PRINT("  I-type immediate: 0x" << hex << imm << dec);
