@@ -1,34 +1,24 @@
-CC = g++
-CFLAGS = -Wall -Wextra -g -std=c++17
+CXX = g++
+SRC_DIR = src
+BIN_DIR = .
 
-all: forwarding non_forwarding forward noforward fun
+all: assembly-forwarding noforward forward assembly-no-forwarding fun
 
-forward: forward.o
-	$(CC) $(CFLAGS) -o forward forward.o
+assembly-forwarding: $(SRC_DIR)/assembly-forwarding.cpp
+	$(CXX) $< -o $(BIN_DIR)/assembly-forwarding
 
-forward.o: src/forward.cpp src/risc_v_assembler.cpp src/risc_v_processor.cpp
-	$(CC) $(CFLAGS) -c src/forward.cpp
+noforward: $(SRC_DIR)/noforward.cpp
+	$(CXX) $< -o $(BIN_DIR)/noforward
 
-noforward: noforward.o
-	$(CC) $(CFLAGS) -o noforward noforward.o
+forward: $(SRC_DIR)/forward.cpp
+	$(CXX) $< -o $(BIN_DIR)/forward
 
-noforward.o: src/noforward.cpp src/risc_v_assembler.cpp src/risc_v_processor.cpp
-	$(CC) $(CFLAGS) -c src/noforward.cpp
+assembly-no-forwarding: $(SRC_DIR)/assembly-no-forwarding.cpp
+	$(CXX) $< -o $(BIN_DIR)/assembly-no-forwarding
 
-forwarding: forwarding.o
-	$(CC) $(CFLAGS) -o assembly-forwarding forwarding.o
-
-forwarding.o: src/forwarding.cpp src/risc_v_assembler.cpp src/risc_v_processor.cpp
-	$(CC) $(CFLAGS) -c src/forwarding.cpp
-
-non_forwarding: non_forwarding.o
-	$(CC) $(CFLAGS) -o assembly-non_forwarding non_forwarding.o
-
-non_forwarding.o: src/non_forwarding.cpp src/risc_v_assembler.cpp src/risc_v_processor.cpp
-	$(CC) $(CFLAGS) -c src/non_forwarding.cpp
+fun :
+	$(chmod +x fun.sh)
+	./fun.sh
 
 clean:
-	rm -f assembly-forwarding assembly-non_forwarding forwarding.o non_forwarding.o forward noforward forward.o noforward.o
-fun:
-	$(chmod +x fun.sh)
-	./fun.sh 
+	rm -f $(BIN_DIR)/assembly-forwarding $(BIN_DIR)/noforward $(BIN_DIR)/forward $(BIN_DIR)/assembly-no-forwarding

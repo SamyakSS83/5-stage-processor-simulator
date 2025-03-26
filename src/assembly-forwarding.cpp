@@ -1,10 +1,9 @@
 #include "risc_v_processor.cpp"
 #include "risc_v_assembler.cpp"
-#include"cycle_stages.h"
+#include"cycle_stages.hpp"
 #include<fstream>
 using namespace std;
 
-/* RISC-V Assembler */
 vector <map<int, string>> cycle_stages;
 
 
@@ -36,9 +35,11 @@ void clean_map(vector <map<int, string>>& cycle_stages){
     }
 }
 
+/* RISC-V Assembler */
+
 int main() {
     // Initialize processor
-    RV32I_5Stage cpu(0x10000, false);
+    RV32I_5Stage cpu(0x10000, true);
     RV32Assembler assembler;
     
     // Ask user for program input
@@ -81,9 +82,15 @@ int main() {
     
     // Assemble the program
     vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
-    
+    // Print the machine code
+    cout << "\nMachine Code:" << endl;
+    for (size_t i = 0; i < machine_code.size(); i++) {
+        cout << "0x" << hex << setw(8) << setfill('0') << machine_code[i] 
+             << " (Address: 0x" << (i * 4) << ")" << dec << endl;
+    }
     // Load program into processor memory
     cpu.load_program(machine_code);
+        
     // Ask for number of cycles to run
     int cycles;
     cout << "\nEnter number of cycles to run: ";
@@ -104,7 +111,7 @@ int main() {
     cpu.dump_state();
 
     ofstream file;
-    file.open("output_non_forwarding.txt");
+    file.open("output_forwarding.txt");
     if (!file.is_open()) {
         std::cerr << "Failed to open the file.\n";// Exit the program with an error code
     }
@@ -123,6 +130,7 @@ int main() {
         cout << endl;
     }
     file.close();
+    
     return 0;
 }
 

@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #include<cstdint>
-#include"cycle_stages.h"
+#include"cycle_stages.hpp"
 using namespace std;
  
 #define DEBUG_MODE 0

@@ -1,7 +1,40 @@
 #include<bits/stdc++.h>
 #include<cstdint>
 #include "risc_v_processor.cpp"
+#include "cycle_stages.hpp"
 using namespace std;
+
+vector <map<int, string>> cycle_stages;
+
+
+void clean_map(vector <map<int, string>>& cycle_stages){
+    // remove leading and trailing "-" from the map :
+    for (int i = 0; i < cycle_stages.size(); i++){
+
+        for (auto it = cycle_stages[i].begin(); it != cycle_stages[i].end(); it++){
+            auto next =it;
+            next++;
+            if (next != cycle_stages[i].end() && (it->second == next->second) && (it->second != "-")){
+                it->second = "-";
+            }
+        }
+
+        for (auto it = cycle_stages[i].begin(); it != cycle_stages[i].end(); it++){
+            if (it->second == "-"){
+                it->second = " ";
+            }
+            else break;
+        }
+
+        for (auto it = cycle_stages[i].rbegin(); it != cycle_stages[i].rend(); it++){
+            if (it->second == "-"){
+                it->second = " ";
+            }
+            else break;
+        }
+    }
+}
+
 
 int main(int argc, char *argv[]){
 if (argc != 3) {
