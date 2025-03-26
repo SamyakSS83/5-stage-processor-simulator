@@ -1173,8 +1173,8 @@ class RV32I_5Stage {
 
             uint32_t pc_1  = ex_mem.pc;
             if (pc_1/4 < cycle_stages.size())
-            cycle_stages[pc_1/4][cycle_count] = "MemOP";
-            cout << "pc: " << pc_1  << " stage: " << "MemOP" << " cycle: " << cycle_count << endl;
+            cycle_stages[pc_1/4][cycle_count] = "MEM";
+            cout << "pc: " << pc_1  << " stage: " << "MEM" << " cycle: " << cycle_count << endl;
             
             // Memory read
             if (ex_mem.mem_read) {
