@@ -1,5 +1,5 @@
-#include "risc_v_processor.hpp"
-#include "risc_v_assembler.hpp"
+#include "risc_v_processor.cpp"
+#include "risc_v_assembler.cpp"
 using namespace std;
 
 /* RISC-V Assembler */

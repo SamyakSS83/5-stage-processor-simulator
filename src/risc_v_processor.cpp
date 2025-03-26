@@ -2,7 +2,7 @@
 #include<cstdint>
 using namespace std;
  
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
@@ -1309,10 +1309,10 @@ class RV32I_5Stage {
         uint64_t cycle_count;
     
         // Add these fields to the RV32I_5Stage class:
-        bool enable_forwarding; // to be used when forwarding is enabled
         bool pipeline_stalled;
         uint32_t stall_count;
         bool id_needs_flush;
         uint32_t pending_branch_target;
-        bool stall_just_resolved;  
+        bool stall_just_resolved; 
+        bool enable_forwarding; // to be used when forwarding is enabled 
     };

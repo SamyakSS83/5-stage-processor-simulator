@@ -5,5 +5,4 @@ addi x3, x0, 15
 addi x4, x0, 20
 add x5, x1, x2
 
-n
-30
+10
