@@ -2,10 +2,10 @@
 #include<cstdint>
 using namespace std;
  
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 #if DEBUG_MODE
-#define DEBUG_PRINT(msg) cout << "[DEBUG] " << msg << endl
+#define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
 #else
 #define DEBUG_PRINT(msg)
 #endif
@@ -727,7 +727,11 @@ class RV32I_5Stage {
                 // 1. Instruction in EX stage will write to a register we need
                 // 2. Instruction in MEM stage will write to a register we need from a load
                 bool needs_stall = false;
-                
+                cout << "rs1: " << rs1 << " rs2: " << rs2 << endl;
+                cout << "rd: " << rd << endl;
+                cout << "id_ex.rd: " << id_ex.rd << endl;
+                cout << "ex_mem.rd: " << ex_mem.rd << endl;
+                cout << "id_ex.valid: " << id_ex.valid << endl;
                 // Check if we need values from registers that are being written to by previous instructions
                 if ((rs1 != 0) && (
                     // EX stage will write to rs1
@@ -772,7 +776,7 @@ class RV32I_5Stage {
                 
                 // Handle stall logic
                 if (needs_stall) {
-                    DEBUG_PRINT("  Stalling pipeline");
+                    DEBUG_PRINT(" Stalling pipeline");
                     pipeline_stalled = true;
                     stall_just_resolved = false;  // Not resolving, starting a stall
                     stall_count++;
