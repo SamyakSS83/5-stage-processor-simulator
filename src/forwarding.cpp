@@ -51,7 +51,7 @@ int main() {
     vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
     // Print the machine code
     cout << "\nMachine Code:" << endl;
-    for (auto i = 0; i < machine_code.size(); i++) {
+    for (size_t i = 0; i < machine_code.size(); i++) {
         cout << "0x" << hex << setw(8) << setfill('0') << machine_code[i] 
              << " (Address: 0x" << (i * 4) << ")" << dec << endl;
     }
