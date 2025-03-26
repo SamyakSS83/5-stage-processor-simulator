@@ -59,5 +59,4 @@ logs/
 # Environment files
 .env
 .env.local
-main.cpp
 no-forwarding.cpp

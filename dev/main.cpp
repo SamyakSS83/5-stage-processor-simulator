@@ -1,12 +1,11 @@
-#include "risc_v_processor.hpp"
-#include "risc_v_assembler.hpp"
+#include<bits/stdc++.h>
+#include "test.cpp"
 using namespace std;
 
-/* RISC-V Assembler */
 
 int main() {
     // Initialize processor
-    RV32I_5Stage cpu(0x10000, true);
+    RV32I_5Stage cpu;
     RV32Assembler assembler;
     
     // Ask user for program input
@@ -52,7 +51,10 @@ int main() {
     
     // Load program into processor memory
     cpu.load_program(machine_code);
-        
+    
+    // Ask for input data to store in memory
+    // 
+    
     // Ask for number of cycles to run
     int cycles;
     cout << "\nEnter number of cycles to run: ";
@@ -66,4 +68,3 @@ int main() {
     
     return 0;
 }
-
