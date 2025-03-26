@@ -1,8 +1,40 @@
 #include "risc_v_processor.cpp"
 #include "risc_v_assembler.cpp"
+#include"cycle_stages.h"
+#include<fstream>
 using namespace std;
 
 /* RISC-V Assembler */
+vector <map<int, string>> cycle_stages;
+
+
+void clean_map(vector <map<int, string>>& cycle_stages){
+    // remove leading and trailing "-" from the map :
+    for (int i = 0; i < cycle_stages.size(); i++){
+
+        for (auto it = cycle_stages[i].begin(); it != cycle_stages[i].end(); it++){
+            auto next =it;
+            next++;
+            if (next != cycle_stages[i].end() && (it->second == next->second) && (it->second != "-")){
+                it->second = "-";
+            }
+        }
+
+        for (auto it = cycle_stages[i].begin(); it != cycle_stages[i].end(); it++){
+            if (it->second == "-"){
+                it->second = " ";
+            }
+            else break;
+        }
+
+        for (auto it = cycle_stages[i].rbegin(); it != cycle_stages[i].rend(); it++){
+            if (it->second == "-"){
+                it->second = " ";
+            }
+            else break;
+        }
+    }
+}
 
 int main() {
     // Initialize processor
@@ -52,18 +84,45 @@ int main() {
     
     // Load program into processor memory
     cpu.load_program(machine_code);
-        
     // Ask for number of cycles to run
     int cycles;
     cout << "\nEnter number of cycles to run: ";
     cin >> cycles;
+
+    for (int i; i<machine_code.size(); i++){
+        map<int, string> row_i;
+        for (int j = 0; j < cycles; j++) {
+            row_i[j] = "-";
+        }
+        cycle_stages.push_back(row_i); //ith row stats
+    }
     
     // Run the simulation
     cpu.run(cycles);
     
     // Display final state
     cpu.dump_state();
-    
+
+    ofstream file;
+    file.open("output_non_forwarding.txt");
+    if (!file.is_open()) {
+        std::cerr << "Failed to open the file.\n";// Exit the program with an error code
+    }
+
+    clean_map(cycle_stages);
+     
+    // Display cycle stages
+    for (int i=0; i< machine_code.size(); i++){
+        cout <<  assembly_lines[i] << ";";
+        file <<  assembly_lines[i] << ";";
+        for (const auto& pair : cycle_stages[i]) {
+            cout << pair.second << ";";
+            file << pair.second << ";";
+        }
+        file << "\n";
+        cout << endl;
+    }
+    file.close();
     return 0;
 }
 

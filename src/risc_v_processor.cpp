@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include<cstdint>
+#include"cycle_stages.h"
 using namespace std;
  
 #define DEBUG_MODE 0
@@ -520,6 +521,8 @@ class RV32I_5Stage {
                                 << " from address 0x" << pc << dec);
                     
                     // Update IF/ID register
+                    if (pc/4 < cycle_stages.size())
+                    cycle_stages[pc/4][cycle_count] = "IF";
                     cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;
                     if_id.pc = pc;
                     if_id.instruction = instr;
@@ -546,6 +549,8 @@ class RV32I_5Stage {
             uint32_t instr = instruction_memory[pc];
             DEBUG_PRINT("  Fetched instruction: 0x" << hex << instr 
                         << " from address 0x" << pc << dec);
+            if (pc/4 < cycle_stages.size())
+            cycle_stages[pc/4][cycle_count] = "IF";
              cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
@@ -572,7 +577,8 @@ class RV32I_5Stage {
                 
                 uint32_t instr = if_id.instruction;
                 uint32_t pc_1 = if_id.pc;
-
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "ID";
                 cout << "pc: " << pc_1 << " stage: " << "ID " << "cycle " << cycle_count << endl ;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
                 
@@ -847,6 +853,8 @@ class RV32I_5Stage {
                 uint32_t instr = if_id.instruction;
                 uint32_t pc_1 = if_id.pc;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "ID";
                 cout << "pc: " << pc_1 << "stage: " << "ID" << " cycle " << cycle_count << endl;
                 uint32_t opcode = extract_opcode(instr);
                 uint32_t funct3 = extract_funct3(instr);
@@ -1063,7 +1071,8 @@ class RV32I_5Stage {
                 // Calculate ALU input
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
-
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
@@ -1100,7 +1109,8 @@ class RV32I_5Stage {
                 // Calculate ALU inputs
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
-
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
@@ -1162,6 +1172,8 @@ class RV32I_5Stage {
             uint32_t mem_data = 0;
 
             uint32_t pc_1  = ex_mem.pc;
+            if (pc_1/4 < cycle_stages.size())
+            cycle_stages[pc_1/4][cycle_count] = "MemOP";
             cout << "pc: " << pc_1  << " stage: " << "MemOP" << " cycle: " << cycle_count << endl;
             
             // Memory read
@@ -1197,6 +1209,8 @@ class RV32I_5Stage {
             }
 
             uint32_t pc_1  = mem_wb.pc;
+            if (pc_1/4 < cycle_stages.size())
+            cycle_stages[pc_1/4][cycle_count] = "WB";
             cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
             
             // Write back to register file
