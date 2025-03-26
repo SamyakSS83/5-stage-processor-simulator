@@ -125,7 +125,7 @@ class RV32I_5Stage {
             if_id = IF_ID_Reg{0, 0, false};
             id_ex = ID_EX_Reg{0, 0, 0, 0, 0, 0, 0, ALUOp::NONE, BranchCond::FALSE, MemOp::NONE, false, false, false, false, false, false};
             ex_mem = EX_MEM_Reg{0, 0, 0, 0, MemOp::NONE, false, false, false, false, 0, false};
-            mem_wb = MEM_WB_Reg{0, 0, 0, false, false, false};
+            mem_wb = MEM_WB_Reg{0, 0, 0, 0, false, false, false};
         }
     
         // Load program into instruction memory
