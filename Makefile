@@ -4,7 +4,7 @@ CFLAGS = -Wall
 all: forwarding non_forwarding
 
 forwarding: forwarding.o
-	$(CC) $(CFLAGS) -o src/forwarding forwarding.o
+	$(CC) $(CFLAGS) -o forwarding forwarding.o
 
 forwarding.o: src/forwarding.cpp src/risc_v_assembler.hpp src/risc_v_processor.hpp
 	$(CC) $(CFLAGS) -c src/forwarding.cpp
