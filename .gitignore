@@ -62,3 +62,5 @@ logs/
 no-forwarding.cpp
 forwarding
 non_forwarding
+assembly-*
+*forward 
