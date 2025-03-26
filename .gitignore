@@ -59,7 +59,7 @@ logs/
 # Environment files
 .env
 .env.local
-no-forwarding.cpp
+
 forwarding
 non_forwarding
 assembly-*

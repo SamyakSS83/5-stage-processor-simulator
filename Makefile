@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall -Wextra -g -std=c++17
 
-all: forwarding non_forwarding forward noforward
+all: forwarding non_forwarding forward noforward fun
 
 forward: forward.o
 	$(CC) $(CFLAGS) -o forward forward.o
@@ -28,4 +28,7 @@ non_forwarding.o: src/non_forwarding.cpp src/risc_v_assembler.cpp src/risc_v_pro
 	$(CC) $(CFLAGS) -c src/non_forwarding.cpp
 
 clean:
-	rm -f forwarding non_forwarding forwarding.o non_forwarding.o
+	rm -f assembly-forwarding assembly-non_forwarding forwarding.o non_forwarding.o forward noforward forward.o noforward.o
+fun:
+	$(chmod +x fun.sh)
+	./fun.sh 
