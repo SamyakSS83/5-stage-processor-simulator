@@ -69,6 +69,8 @@ file.close();
 cpu.load_program(instructions);
 cpu.run(cycles);    
 cpu.dump_state();
+
+
 return 0;
 
 }
