@@ -81,7 +81,9 @@ int main() {
     
     // Assemble the program
     vector<uint32_t> machine_code = assembler.assembleProgram(assembly_lines);
-    
+    for(auto i = 0; i < machine_code.size(); i++){
+        cout << hex << machine_code[i] << endl;
+    }
     // Load program into processor memory
     cpu.load_program(machine_code);
     // Ask for number of cycles to run

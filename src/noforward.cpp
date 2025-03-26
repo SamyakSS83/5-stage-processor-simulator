@@ -68,14 +68,6 @@ file.close();
 cpu.load_program(instructions);
 cpu.run(cycles);    
 cpu.dump_state();
-clean_map(cycle_stages);
-for(auto i = 0; i < instructions.size(); i++){
-    cout <<  instructions[i] << ";";
-    for (const auto& pair : cycle_stages[i]) {
-        cout << pair.second << ";";
-    }
-    cout << endl;
-}
-return 0;
+
 
 }

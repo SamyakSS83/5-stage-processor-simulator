@@ -1,0 +1,96 @@
+Running for 16 cycles
+returning
+pc: 0 stage: IF cycle 0
+returning
+pc: 0stage: ID cycle 1
+pc: 4 stage: IF cycle 1
+pc: 0 stage: EX cycle: 2
+pc: 4stage: ID cycle 2
+pc: 8 stage: IF cycle 2
+pc: 0 stage: MEM cycle: 3
+pc: 4 stage: EX cycle: 3
+pc: 8stage: ID cycle 3
+pc: 12 stage: IF cycle 3
+pc: 0 stage: WB cycle: 4
+pc: 4 stage: MEM cycle: 4
+pc: 8 stage: EX cycle: 4
+pc: 12stage: ID cycle 4
+pc: 24 stage: IF cycle 4
+pc: 4 stage: WB cycle: 5
+pc: 8 stage: MEM cycle: 5
+returning
+pc: 24stage: ID cycle 5
+pc: 28 stage: IF cycle 5
+pc: 8 stage: WB cycle: 6
+pc: 8 stage: MEM cycle: 6
+pc: 24 stage: EX cycle: 6
+pc: 28stage: ID cycle 6
+pc: 32 stage: IF cycle 6
+pc: 8 stage: WB cycle: 7
+pc: 24 stage: MEM cycle: 7
+pc: 28 stage: EX cycle: 7
+pc: 32stage: ID cycle 7
+pc: 36 stage: IF cycle 7
+pc: 24 stage: WB cycle: 8
+pc: 28 stage: MEM cycle: 8
+pc: 32 stage: EX cycle: 8
+pc: 36stage: ID cycle 8
+pc: 40 stage: IF cycle 8
+pc: 28 stage: WB cycle: 9
+pc: 32 stage: MEM cycle: 9
+pc: 36 stage: EX cycle: 9
+pc: 40stage: ID cycle 9
+pc: 44 stage: IF cycle 9
+pc: 32 stage: WB cycle: 10
+pc: 36 stage: MEM cycle: 10
+pc: 40 stage: EX cycle: 10
+pc: 44stage: ID cycle 10
+pc: 48 stage: IF cycle 10
+pc: 36 stage: WB cycle: 11
+pc: 40 stage: MEM cycle: 11
+pc: 44 stage: EX cycle: 11
+pc: 48stage: ID cycle 11
+pc: 52 stage: IF cycle 11
+pc: 40 stage: WB cycle: 12
+pc: 44 stage: MEM cycle: 12
+pc: 48 stage: EX cycle: 12
+pc: 52stage: ID cycle 12
+pc: 56 stage: IF cycle 12
+pc: 44 stage: WB cycle: 13
+pc: 48 stage: MEM cycle: 13
+pc: 52 stage: EX cycle: 13
+pc: 56stage: ID cycle 13
+pc: 60 stage: IF cycle 13
+pc: 48 stage: WB cycle: 14
+pc: 52 stage: MEM cycle: 14
+pc: 56 stage: EX cycle: 14
+pc: 60stage: ID cycle 14
+pc: 64 stage: IF cycle 14
+pc: 52 stage: WB cycle: 15
+pc: 56 stage: MEM cycle: 15
+pc: 60 stage: EX cycle: 15
+pc: 64stage: ID cycle 15
+pc: 68 stage: IF cycle 15
+Execution completed after 16 cycles
+======= PROCESSOR STATE =======
+Cycle count: 16
+PC: 0x48
+
+Registers:
+x00: 0x00000000	x01: 0x00000000	x02: 0x00000000	x03: 0x00000000
+x04: 0x00000000	x05: 0x00000000	x06: 0x00000000	x07: 0x00000000
+x08: 0x00000000	x09: 0x00000000	x10: 0x00000000	x11: 0x00000000
+x12: 0x00000000	x13: 0x00000000	x14: 0x00000000	x15: 0x00000000
+x16: 0x00000000	x17: 0x00000000	x18: 0x00000000	x19: 0x00000000
+x20: 0x00000000	x21: 0x00000000	x22: 0x00000000	x23: 0x00000000
+x24: 0x00000000	x25: 0x00000000	x26: 0x00000000	x27: 0x00000000
+x28: 0x00000000	x29: 0x00000000	x30: 0x00000000	x31: 0x00000000
+
+Pipeline State:
+IF/ID: valid=1 pc=0x44 instr=0x0
+ID/EX: valid=1 pc=0x40 rd=0 alu_op=a
+EX/MEM: valid=1 alu_result=0x0 rd=0
+MEM/WB: valid=1 alu_result=0x0 rd=0
+
+Data Memory (non-zero values):
+===============================
