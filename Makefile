@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -g 
+CFLAGS = -Wall -Wextra -g -std=c++17
 
 all: forwarding non_forwarding
 
