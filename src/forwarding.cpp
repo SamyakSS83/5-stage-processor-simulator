@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
     // Initialize processor
-    RV32I_5Stage cpu(0x10000, true);
+    RV32I_5Stage cpu(0x10000, false);
     RV32Assembler assembler;
     
     // Ask user for program input
