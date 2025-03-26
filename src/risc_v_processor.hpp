@@ -636,9 +636,9 @@ class RV32I_5Stage {
                             case 0x3: alu_op = ALUOp::SLTU; break;
                             case 0x4: alu_op = ALUOp::XOR; break;
                             case 0x5: 
-                                if ((imm >> 5) & 0x7F == 0x0) 
+                                if (((imm >> 5) & 0x7F) == 0x0) 
                                     alu_op = ALUOp::SRL;
-                                else if ((imm >> 5) & 0x7F == 0x20)
+                                else if (((imm >> 5) & 0x7F) == 0x20)
                                     alu_op = ALUOp::SRA;
                                 break;
                             case 0x6: alu_op = ALUOp::OR; break;
@@ -908,9 +908,9 @@ class RV32I_5Stage {
                             case 0x3: alu_op = ALUOp::SLTU; break;
                             case 0x4: alu_op = ALUOp::XOR; break;
                             case 0x5: 
-                                if ((imm >> 5) & 0x7F == 0x0) 
+                                if (((imm >> 5) & 0x7F) == 0x0) 
                                     alu_op = ALUOp::SRL;
-                                else if ((imm >> 5) & 0x7F == 0x20)
+                                else if (((imm >> 5) & 0x7F) == 0x20)
                                     alu_op = ALUOp::SRA;
                                 break;
                             case 0x6: alu_op = ALUOp::OR; break;
