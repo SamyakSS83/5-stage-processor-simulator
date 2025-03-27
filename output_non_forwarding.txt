@@ -1,0 +1,7 @@
+addi x1, x0, 1;IF;ID;EX;MEM;WB;
+addi x2, x0, 0; ;IF;ID;EX;MEM;
+addi x3, x0, 10; ; ;IF;ID;EX;
+add  x4, x1, x2; ; ; ;IF;ID;
+addi x1, x1, 1; ; ; ; ;IF;
+add  x2, x0, x4; ; ; ; ; ;
+blt  x1, x3, -12; ; ; ; ; ;

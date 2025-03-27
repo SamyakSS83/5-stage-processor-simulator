@@ -96,7 +96,7 @@ int main() {
     cout << "\nEnter number of cycles to run: ";
     cin >> cycles;
 
-    for (int i; i<machine_code.size(); i++){
+    for (int i=0; i<machine_code.size(); i++){
         map<int, string> row_i;
         for (int j = 0; j < cycles; j++) {
             row_i[j] = "-";

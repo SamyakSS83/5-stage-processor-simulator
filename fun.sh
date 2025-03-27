@@ -2,7 +2,7 @@
 
 printf " \n"
 printf " __________ \n"
-printf "< compiled >\n"
+echo "< $1 >"
 printf " ---------- \n"
 printf "  \                              _\n"
 printf "   \                            | |\n"

@@ -1,11 +1,11 @@
-addi x5 x0 0;IF;ID;EX;MEM;WB;-;-;IF;ID;EX;
-addi x6 x0 0;-;IF;ID;EX;MEM;WB;WB;WB;IF;ID;
-bge x6 x11 28;-;-;IF;ID;-;-;-;-;-;IF;
-slli x7 x6 2;-;-;-;-;-;-;-;-;-;-;
-add x7 x10 x7;-;-;-;-;-;-;-;-;-;-;
-lw x7 0 x7;-;-;-;-;-;-;-;-;-;-;
-add x5 x5 x7;-;-;-;-;-;-;-;-;-;-;
-addi x6 x6 1;-;-;-;-;-;-;-;-;-;-;
-jal x0 -24;-;-;-;-;-;-;-;-;-;-;
-addi x10 x5 0;-;-;-;-;IF;ID;EX;MEM;WB;WB;
-jalr x0 x1 0;-;-;-;-;-;IF;ID;-;-;-;
+addi x5 x0 0;IF;ID;EX;MEM;WB;-;-;IF;ID;EX;MEM;WB;-;-;IF;ID;EX;MEM;WB;-;-;IF;ID;EX;MEM;
+addi x6 x0 0;-;IF;ID;EX;MEM;WB;WB;WB;IF;ID;EX;MEM;WB;WB;WB;IF;ID;EX;MEM;WB;WB;WB;IF;ID;EX;
+bge x6 x11 28;-;-;IF;ID;-;-;-;-;-;IF;ID;-;-;-;-;-;IF;ID;-;-;-;-;-;IF;ID;
+slli x7 x6 2;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+add x7 x10 x7;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+lw x7 0 x7;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+add x5 x5 x7;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+addi x6 x6 1;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+jal x0 -24;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;
+addi x10 x5 0;-;-;-;-;IF;ID;EX;MEM;WB;WB;WB;IF;ID;EX;MEM;WB;WB;WB;IF;ID;EX;MEM;WB;WB;WB;
+jalr x0 x1 0;-;-;-;-;-;IF;ID;-;-;-;-;-;IF;ID;-;-;-;-;-;IF;ID;-;-;-;-;

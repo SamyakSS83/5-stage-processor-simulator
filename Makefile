@@ -1,4 +1,4 @@
-CXX = g++
+CXX = g++ -g
 SRC_DIR = src
 BIN_DIR = .
 
@@ -18,7 +18,8 @@ assembly-no-forwarding: $(SRC_DIR)/assembly-no-forwarding.cpp
 
 fun :
 	$(chmod +x fun.sh)
-	./fun.sh
+	./fun.sh compiled
 
 clean:
 	rm -f $(BIN_DIR)/assembly-forwarding $(BIN_DIR)/noforward $(BIN_DIR)/forward $(BIN_DIR)/assembly-no-forwarding
+	./fun.sh clean

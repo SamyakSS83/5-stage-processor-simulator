@@ -3,7 +3,7 @@
 #include"cycle_stages.hpp"
 using namespace std;
  
-#define DEBUG_MODE 1 
+#define DEBUG_MODE 1
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
@@ -60,18 +60,15 @@ class RV32I_5Stage {
             uint32_t rd;
             uint32_t rs1;
             uint32_t rs2;
-            uint32_t branch_target;
             ALUOp alu_op;
             BranchCond branch_cond;
             MemOp mem_op;
-            InstrType instr_type;
             bool reg_write;
             bool mem_read;
             bool mem_write;
             bool alu_src;
             bool use_pc;
             bool valid;
-            bool branch_taken;
         };
     
         struct EX_MEM_Reg {
@@ -83,8 +80,8 @@ class RV32I_5Stage {
             bool reg_write;
             bool mem_read;
             bool mem_write;
-            // bool branch_taken;
-            // uint32_t branch_target;
+            bool branch_taken;
+            uint32_t branch_target;
             bool valid;
         };
     
@@ -127,8 +124,8 @@ class RV32I_5Stage {
         void reset_pipeline_regs() {
             DEBUG_PRINT("Resetting pipeline registers");
             if_id = IF_ID_Reg{0, 0, false};
-            id_ex = ID_EX_Reg{0, 0, 0, 0, 0, 0, 0, 0, ALUOp::NONE, BranchCond::FALSE, MemOp::NONE, InstrType::UNKNOWN, false, false, false, false, false, false, false};
-            ex_mem = EX_MEM_Reg{0, 0, 0, 0, MemOp::NONE, false, false, false, false};
+            id_ex = ID_EX_Reg{0, 0, 0, 0, 0, 0, 0, ALUOp::NONE, BranchCond::FALSE, MemOp::NONE, false, false, false, false, false, false};
+            ex_mem = EX_MEM_Reg{0, 0, 0, 0, MemOp::NONE, false, false, false, false, 0, false};
             mem_wb = MEM_WB_Reg{0, 0, 0, 0, false, false, false};
         }
     
@@ -204,23 +201,20 @@ class RV32I_5Stage {
     
         // Immediate value extraction based on instruction type
         uint32_t extract_immediate(uint32_t instr, InstrType type) {
-            int imm = 0;
+            uint32_t imm = 0;
          
             switch (type) {
                 case InstrType::I: {
                     // I-type: [31:20]
-                    cout << "type I imm" << endl;
                     imm = (instr >> 20) ;
                    
                     // Sign extend
                     if (imm & 0x800) imm |= 0xFFFFF000;
-                    
                     DEBUG_PRINT("  I-type immediate: 0x" << hex << imm << dec);
                     break;
                 }
                     
                 case InstrType::S: {
-                    cout << "type S imm" << endl;
                     // S-type: [31:25][11:7]
                     imm = ((instr >> 25) & 0x7F) << 5;
                     imm |= (instr >> 7) & 0x1F;
@@ -231,7 +225,6 @@ class RV32I_5Stage {
                 }
                     
                 case InstrType::B: {
-                    cout << "type B imm" << endl;
                     // B-type: [31][7][30:25][11:8]
                     imm = ((instr >> 31) & 0x1) << 12;
                     imm |= ((instr >> 7) & 0x1) << 11;
@@ -244,7 +237,6 @@ class RV32I_5Stage {
                 }
                     
                 case InstrType::U: {
-                    cout << "type U imm" << endl;
                     // U-type: [31:12]
                     imm = instr & 0xFFFFF000;
                     DEBUG_PRINT("  U-type immediate: 0x" << hex << imm << dec);
@@ -252,16 +244,13 @@ class RV32I_5Stage {
                 }
                     
                 case InstrType::J: {
-                    cout << "type J imm" << endl;
                     // J-type: [31][19:12][20][30:21]
                     imm = ((instr >> 31) & 0x1) << 20;
                     imm |= ((instr >> 12) & 0xFF) << 12;
                     imm |= ((instr >> 20) & 0x1) << 11;
                     imm |= ((instr >> 21) & 0x3FF) << 1;
                     // Sign extend
-                    cout << "imm is : " << imm << endl;
-                    if (imm & 0x10000) imm |= 0xFFF00000;
-                    cout << "imm is : " << imm << endl;
+                    if (imm & 0x100000) imm |= 0xFFF00000;
                     DEBUG_PRINT("  J-type immediate: 0x" << hex << imm << dec);
                     break;
                 }
@@ -532,10 +521,8 @@ class RV32I_5Stage {
                                 << " from address 0x" << pc << dec);
                     
                     // Update IF/ID register
-                    if (pc/4 < cycle_stages.size()){
-                        if (cycle_stages[pc/4][cycle_count] != "ID")
-                        cycle_stages[pc/4][cycle_count] = "IF";
-                    }
+                    if (pc/4 < cycle_stages.size())
+                    cycle_stages[pc/4][cycle_count] = "IF";
                     cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;
                     if_id.pc = pc;
                     if_id.instruction = instr;
@@ -548,34 +535,28 @@ class RV32I_5Stage {
             }
     
             else {
-                  // Check for branch/jump from EX stage -- no, to be resolved in ID stage
-            if (id_ex.valid && id_ex.branch_taken) {
+                  // Check for branch/jump from EX stage
+            if (ex_mem.valid && ex_mem.branch_taken) {
                 DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
-                            << id_ex.branch_target << dec << " and invalidating pipeline");
-                pc = id_ex.branch_target;
-                // Invalidate earlier pipeline stages if not jal or jalr
-                if ((id_ex.instr_type != InstrType::J )|| (id_ex.instr_type != InstrType::I)) {
-                    if_id.valid = false;
-                    id_ex.valid = false;
-                }
-                return ;
+                            << ex_mem.branch_target << dec << " and invalidating pipeline");
+                pc = ex_mem.branch_target;
+                // Invalidate earlier pipeline stages
+                if_id.valid = false;
+                id_ex.valid = false;
             }
             
-            cout << "pc is now : " << pc << endl;
             // Fetch instruction from memory
             uint32_t instr = instruction_memory[pc];
             DEBUG_PRINT("  Fetched instruction: 0x" << hex << instr 
                         << " from address 0x" << pc << dec);
-            if (pc/4 < cycle_stages.size()){
-                if (cycle_stages[pc/4][cycle_count] != "ID")
-                cycle_stages[pc/4][cycle_count] = "IF";
-            }
+            if (pc/4 < cycle_stages.size())
+            cycle_stages[pc/4][cycle_count] = "IF";
              cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
             if_id.instruction = instr;
             if_id.valid = true;
-            id_ex.branch_taken = false; // Reset branch taken flag
+            ex_mem.branch_taken = false; // Reset branch taken flag
             
             // Increment PC
             pc += 4;
@@ -596,10 +577,8 @@ class RV32I_5Stage {
                 
                 uint32_t instr = if_id.instruction;
                 uint32_t pc_1 = if_id.pc;
-                if (pc_1/4 < cycle_stages.size()) {
-                    if (cycle_stages[pc_1/4][cycle_count] != "EX")
-                    cycle_stages[pc_1/4][cycle_count] = "ID";
-                }
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "ID";
                 cout << "pc: " << pc_1 << " stage: " << "ID " << "cycle " << cycle_count << endl ;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
                 
@@ -611,7 +590,7 @@ class RV32I_5Stage {
                 uint32_t rd = extract_rd(instr);
                 
                 InstrType instr_type = decode_instr_type(instr);
-                int imm = extract_immediate(instr, instr_type);
+                uint32_t imm = extract_immediate(instr, instr_type);
                 
                 // Determine control signals
                 bool reg_write = false;
@@ -726,7 +705,6 @@ class RV32I_5Stage {
                         
                     case OPCODE_JALR:  // Jump and Link Register
                         DEBUG_PRINT("  JALR instruction");
-                        cout << "jalr found --- -- -- -- -- - - - - - - " << endl;
                         reg_write = true;
                         alu_src = true;
                         alu_op = ALUOp::ADD;
@@ -865,7 +843,6 @@ class RV32I_5Stage {
                     id_ex.alu_src = alu_src;
                     id_ex.use_pc = use_pc;
                     id_ex.valid = if_id.valid;
-                    id_ex.instr_type = instr_type;
                 }
             }
             else {
@@ -877,10 +854,8 @@ class RV32I_5Stage {
                 uint32_t instr = if_id.instruction;
                 uint32_t pc_1 = if_id.pc;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
-                if (pc_1/4 < cycle_stages.size()) {
-                    if (cycle_stages[pc_1/4][cycle_count] != "EX")
-                    cycle_stages[pc_1/4][cycle_count] = "ID";
-                }
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "ID";
                 cout << "pc: " << pc_1 << "stage: " << "ID" << " cycle " << cycle_count << endl;
                 uint32_t opcode = extract_opcode(instr);
                 uint32_t funct3 = extract_funct3(instr);
@@ -891,9 +866,6 @@ class RV32I_5Stage {
                 
                 InstrType instr_type = decode_instr_type(instr);
                 uint32_t imm = extract_immediate(instr, instr_type);
-
-                bool branch_taken = false;
-                uint32_t branch_target = 0;
                 
                 // Determine control signals
                 bool reg_write = false;
@@ -1032,31 +1004,10 @@ class RV32I_5Stage {
                     default:
                         DEBUG_PRINT("  Unknown instruction");
                 }
-
+                
                 // Read register values
                 uint32_t rs1_val = read_register(rs1);
                 uint32_t rs2_val = read_register(rs2);
-                
-                if (branch_cond != BranchCond::FALSE) {
-                    DEBUG_PRINT("  Evaluating branch condition");
-                    bool cond_met = evaluate_branch(id_ex.rs1_val, id_ex.rs2_val, branch_cond);
-                    
-                    if (cond_met) {
-                        branch_taken = true;
-                        
-                        // Calculate branch target
-                        if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
-                            branch_target = (rs1_val + imm) & ~1; // Clear lowest bit
-                            DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
-                        } else {
-                            branch_target = if_id.pc + imm;
-                            // cout << "branch target: " << branch_target << endl;
-                            cout << "pc is changed to: " << branch_target << endl;
-                            DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
-                        }
-                    }
-                }
-                
                 
                 // Forward data if there's a RAW hazard
                 // From EX/MEM stage
@@ -1102,10 +1053,6 @@ class RV32I_5Stage {
                 id_ex.alu_src = alu_src;
                 id_ex.use_pc = use_pc;
                 id_ex.valid = if_id.valid;
-                id_ex.branch_taken = branch_taken;
-                id_ex.branch_target = branch_target;
-                id_ex.instr_type = instr_type;
-                if(instr_type == InstrType::J) cout << "instruction type id_Ex: J"  << endl;
             }
         }
     
@@ -1126,10 +1073,8 @@ class RV32I_5Stage {
                 // Calculate ALU input
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
-                if (pc_1/4 < cycle_stages.size()){
-                    if (cycle_stages[pc_1/4][cycle_count] != "MEM")
-                    cycle_stages[pc_1/4][cycle_count] = "EX";
-                }
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
@@ -1151,8 +1096,8 @@ class RV32I_5Stage {
                 ex_mem.reg_write = id_ex.reg_write;
                 ex_mem.mem_read = id_ex.mem_read;
                 ex_mem.mem_write = id_ex.mem_write;
-                // ex_mem.branch_taken = false; // Branch handling is now in ID stage -- should have been done 
-                // ex_mem.branch_target = 0;
+                ex_mem.branch_taken = false; // Branch handling is now in ID stage
+                ex_mem.branch_target = 0;
                 ex_mem.valid = id_ex.valid;
             }
     
@@ -1166,10 +1111,8 @@ class RV32I_5Stage {
                 // Calculate ALU inputs
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
-                if (pc_1/4 < cycle_stages.size()){
-                    if (cycle_stages[pc_1/4][cycle_count] != "MEM")
-                    cycle_stages[pc_1/4][cycle_count] = "EX";
-                }
+                if (pc_1/4 < cycle_stages.size())
+                cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
@@ -1180,28 +1123,26 @@ class RV32I_5Stage {
                 uint32_t alu_result = execute_alu(alu_in1, alu_in2, id_ex.alu_op);
                 
                 // Branch evaluation
-                // bool branch_taken = false;
-                // uint32_t branch_target = 0;
+                bool branch_taken = false;
+                uint32_t branch_target = 0;
                 
-                // if (id_ex.branch_cond != BranchCond::FALSE) {
-                //     DEBUG_PRINT("  Evaluating branch condition");
-                //     bool cond_met = evaluate_branch(id_ex.rs1_val, id_ex.rs2_val, id_ex.branch_cond);
+                if (id_ex.branch_cond != BranchCond::FALSE) {
+                    DEBUG_PRINT("  Evaluating branch condition");
+                    bool cond_met = evaluate_branch(id_ex.rs1_val, id_ex.rs2_val, id_ex.branch_cond);
                     
-                //     if (cond_met) {
-                //         branch_taken = true;
+                    if (cond_met) {
+                        branch_taken = true;
                         
-                //         // Calculate branch target
-                //         if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
-                //             branch_target = (id_ex.rs1_val + id_ex.imm) & ~1; // Clear lowest bit
-                //             DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
-                //         } else {
-                //             branch_target = id_ex.pc + id_ex.imm;
-                //             // cout << "branch target: " << branch_target << endl;
-                //             cout << "pc is changed to: " << branch_target << endl;
-                //             DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
-                //         }
-                //     }
-                // }
+                        // Calculate branch target
+                        if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
+                            branch_target = (id_ex.rs1_val + id_ex.imm) & ~1; // Clear lowest bit
+                            DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
+                        } else {
+                            branch_target = id_ex.pc + id_ex.imm;
+                            DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
+                        }
+                    }
+                }
                 
                 // Update EX/MEM register
                 DEBUG_PRINT("  Updating EX/MEM register");
@@ -1213,8 +1154,8 @@ class RV32I_5Stage {
                 ex_mem.reg_write = id_ex.reg_write;
                 ex_mem.mem_read = id_ex.mem_read;
                 ex_mem.mem_write = id_ex.mem_write;
-                // ex_mem.branch_taken = branch_taken;
-                // ex_mem.branch_target = branch_target;
+                ex_mem.branch_taken = branch_taken;
+                ex_mem.branch_target = branch_target;
                 ex_mem.valid = id_ex.valid;
             }
         
@@ -1233,11 +1174,8 @@ class RV32I_5Stage {
             uint32_t mem_data = 0;
 
             uint32_t pc_1  = ex_mem.pc;
-            if (pc_1/4 < cycle_stages.size()) {
-                if (cycle_stages[pc_1/4][cycle_count] != "WB") 
-                cycle_stages[pc_1/4][cycle_count] = "MEM";
-            }
-        
+            if (pc_1/4 < cycle_stages.size())
+            cycle_stages[pc_1/4][cycle_count] = "MEM";
             cout << "pc: " << pc_1  << " stage: " << "MEM" << " cycle: " << cycle_count << endl;
             
             // Memory read
@@ -1273,11 +1211,8 @@ class RV32I_5Stage {
             }
 
             uint32_t pc_1  = mem_wb.pc;
-            if (pc_1/4 < cycle_stages.size()){
-                if (cycle_stages[pc_1/4][cycle_count] == "-"
-                     || cycle_stages[pc_1/4][cycle_count] == " ") //not already written by another stage, make such changes in all stages
-                cycle_stages[pc_1/4][cycle_count] = "WB";
-            }
+            if (pc_1/4 < cycle_stages.size())
+            cycle_stages[pc_1/4][cycle_count] = "WB";
             cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
             
             // Write back to register file
