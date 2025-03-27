@@ -6,7 +6,6 @@ using namespace std;
 
 vector <map<int, string>> cycle_stages;
 
-
 void clean_map(vector <map<int, string>>& cycle_stages){
     // remove leading and trailing "-" from the map :
     for (int i = 0; i < cycle_stages.size(); i++){
