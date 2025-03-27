@@ -3,7 +3,7 @@
 #include"cycle_stages.hpp"
 using namespace std;
  
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
@@ -1259,8 +1259,10 @@ class RV32I_5Stage {
             }
 
             uint32_t pc_1  = mem_wb.pc;
-            if (pc_1/4 < cycle_stages.size())
-            cycle_stages[pc_1/4][cycle_count] = "WB";
+            if (pc_1/4 < cycle_stages.size()){
+                cout << "cycle for WB: " << cycle_count << endl;            
+                cycle_stages[pc_1/4][cycle_count] = "WB"; 
+            }
             // cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
             
             // Write back to register file
