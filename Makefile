@@ -1,6 +1,6 @@
 CXX = g++ -g
 SRC_DIR = src
-BIN_DIR = ./src
+BIN_DIR = src
 
 all: assembly-forwarding noforward forward assembly-no-forwarding 
 

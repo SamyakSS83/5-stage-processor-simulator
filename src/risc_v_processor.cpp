@@ -566,7 +566,7 @@ class RV32I_5Stage {
                         << " from address 0x" << pc << dec);
             if (pc/4 < cycle_stages.size())
             cycle_stages[pc/4][cycle_count] = "IF";
-             cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
+            //  cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
             if_id.instruction = instr;
@@ -1260,7 +1260,7 @@ class RV32I_5Stage {
 
             uint32_t pc_1  = mem_wb.pc;
             if (pc_1/4 < cycle_stages.size()){
-                cout << "cycle for WB: " << cycle_count << endl;            
+                // cout << "cycle for WB: " << cycle_count << endl;            
                 cycle_stages[pc_1/4][cycle_count] = "WB"; 
             }
             // cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
