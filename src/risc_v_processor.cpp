@@ -541,6 +541,8 @@ class RV32I_5Stage {
                     pc = pending_branch_target;
                     if_id.valid = false;
                     id_needs_flush = false;
+                    cout << "returning from IF branch was taken" << endl;
+                    return;
                 }
                   // Check for branch/jump from EX stage
             // if (ex_mem.valid && ex_mem.branch_taken) {
