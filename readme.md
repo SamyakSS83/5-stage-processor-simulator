@@ -71,6 +71,17 @@ Below are the images showcasing the processor's behavior:
 - **No Forwarding**  
     ![No Forwarding](assets/noforward.png)
 
+## PS
+1. Piazza was tried to be complied with, but some differences from piazza may be present
+
+2. As an easter egg, we have added a bash file `fun.sh`, it is called everytime `make` or `make clean` is done.
+
+Hope you like it :) 
+### USAGE
+```bash
+./fun.sh <text>
+```
+
 
 
 
