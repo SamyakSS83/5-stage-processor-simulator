@@ -107,13 +107,13 @@ int main(int argc, char* argv[]) {
     // Read input file
     read_input_file(input_file, machine_code, assembly_code);
     //print the machine code and assembly code
-    for (const auto& code : machine_code) {
-        cout << hex << code << " ";
-    }
-    cout << endl;
-    for (const auto& code : assembly_code) {
-        cout << code << endl;
-    }
+    // for (const auto& code : machine_code) {
+    //     cout << hex << code << " ";
+    // }
+    // cout << endl;
+    // for (const auto& code : assembly_code) {
+    //     cout << code << endl;
+    // }
     // Load the program into the CPU
 
 
