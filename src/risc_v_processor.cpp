@@ -535,15 +535,22 @@ class RV32I_5Stage {
             }
     
             else {
+                if (id_needs_flush) {
+                    DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
+                                << pending_branch_target << dec << " and invalidating IF/ID");
+                    pc = pending_branch_target;
+                    if_id.valid = false;
+                    id_needs_flush = false;
+                }
                   // Check for branch/jump from EX stage
-            if (ex_mem.valid && ex_mem.branch_taken) {
-                DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
-                            << ex_mem.branch_target << dec << " and invalidating pipeline");
-                pc = ex_mem.branch_target;
-                // Invalidate earlier pipeline stages
-                if_id.valid = false;
-                id_ex.valid = false;
-            }
+            // if (ex_mem.valid && ex_mem.branch_taken) {
+            //     DEBUG_PRINT("  Branch taken detected - updating PC to 0x" << hex 
+            //                 << ex_mem.branch_target << dec << " and invalidating pipeline");
+            //     pc = ex_mem.branch_target;
+            //     // Invalidate earlier pipeline stages
+            //     if_id.valid = false;
+            //     id_ex.valid = false;
+            // }
             
             // Fetch instruction from memory
             uint32_t instr = instruction_memory[pc];
@@ -1151,23 +1158,23 @@ class RV32I_5Stage {
                 bool branch_taken = false;
                 uint32_t branch_target = 0;
                 
-                if (id_ex.branch_cond != BranchCond::FALSE) {
-                    DEBUG_PRINT("  Evaluating branch condition");
-                    bool cond_met = evaluate_branch(id_ex.rs1_val, id_ex.rs2_val, id_ex.branch_cond);
+                // if (id_ex.branch_cond != BranchCond::FALSE) {
+                //     DEBUG_PRINT("  Evaluating branch condition");
+                //     bool cond_met = evaluate_branch(id_ex.rs1_val, id_ex.rs2_val, id_ex.branch_cond);
                     
-                    if (cond_met) {
-                        branch_taken = true;
+                //     if (cond_met) {
+                //         branch_taken = true;
                         
-                        // Calculate branch target
-                        if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
-                            branch_target = (id_ex.rs1_val + id_ex.imm) & ~1; // Clear lowest bit
-                            DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
-                        } else {
-                            branch_target = id_ex.pc + id_ex.imm;
-                            DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
-                        }
-                    }
-                }
+                //         // Calculate branch target
+                //         if (extract_opcode(if_id.instruction) == OPCODE_JALR) {
+                //             branch_target = (id_ex.rs1_val + id_ex.imm) & ~1; // Clear lowest bit
+                //             DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
+                //         } else {
+                //             branch_target = id_ex.pc + id_ex.imm;
+                //             DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
+                //         }
+                //     }
+                // }
                 
                 // Update EX/MEM register
                 DEBUG_PRINT("  Updating EX/MEM register");

@@ -123,7 +123,7 @@ int main() {
         cout <<  assembly_lines[i] << ";";
         file <<  assembly_lines[i] << ";";
         for (const auto& pair : cycle_stages[i]) {
-            cout << pair.second << ";";
+            cout << pair.first<< " : " << pair.second << ";";
             file << pair.second << ";";
         }
         file << "\n";
