@@ -2,7 +2,7 @@
 
 # Path to the C++ binary
 
-CPP_BINARY="./noforward"
+CPP_BINARY="./forward"
 
 # Input and output directories
 INPUT_DIR="../inputfiles/"
@@ -18,7 +18,7 @@ for input_file in "$INPUT_DIR"/*.txt; do
     
     # Construct the output file path
     output_file="$OUTPUT_DIR/$filename"
-    output_file+="_no_forward_out"
+    output_file+="_forward_out"
     output_file+=".txt"
     
     # Run the binary on the input file and redirect the output to the output file

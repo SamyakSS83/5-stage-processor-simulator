@@ -27,7 +27,8 @@ class RV32I_5Stage {
  
         // ALU operations
         enum class ALUOp {
-            ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND, NONE
+            ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND, 
+            MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU, NONE
         };
     
         // Branch comparison types
@@ -348,6 +349,72 @@ class RV32I_5Stage {
                     result = a & b; 
                     DEBUG_PRINT("  AND: result=0x" << hex << result << dec);
                     break;
+                // M-extension operations
+                case ALUOp::MUL: {
+                    result = static_cast<uint32_t>(static_cast<int32_t>(a) * static_cast<int32_t>(b));
+                    DEBUG_PRINT("  MUL: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::MULH: {
+                    int64_t res = static_cast<int64_t>(static_cast<int32_t>(a)) * 
+                                 static_cast<int64_t>(static_cast<int32_t>(b));
+                    result = static_cast<uint32_t>(res >> 32);
+                    DEBUG_PRINT("  MULH: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::MULHSU: {
+                    int64_t res = static_cast<int64_t>(static_cast<int32_t>(a)) * 
+                                 static_cast<uint64_t>(b);
+                    result = static_cast<uint32_t>(res >> 32);
+                    DEBUG_PRINT("  MULHSU: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::MULHU: {
+                    uint64_t res = static_cast<uint64_t>(a) * static_cast<uint64_t>(b);
+                    result = static_cast<uint32_t>(res >> 32);
+                    DEBUG_PRINT("  MULHU: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::DIV: {
+                    if (b == 0) {
+                        result = 0xFFFFFFFF;  // Division by zero returns -1
+                    } else if (a == 0x80000000 && b == 0xFFFFFFFF) {
+                        result = 0x80000000;  // Overflow case
+                    } else {
+                        result = static_cast<uint32_t>(static_cast<int32_t>(a) / static_cast<int32_t>(b));
+                    }
+                    DEBUG_PRINT("  DIV: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::DIVU: {
+                    if (b == 0) {
+                        result = 0xFFFFFFFF;  // Division by zero returns max unsigned value
+                    } else {
+                        result = a / b;
+                    }
+                    DEBUG_PRINT("  DIVU: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::REM: {
+                    if (b == 0) {
+                        result = a;  // Remainder of division by zero returns the dividend
+                    } else if (a == 0x80000000 && b == 0xFFFFFFFF) {
+                        result = 0;  // Special case
+                    } else {
+                        result = static_cast<uint32_t>(static_cast<int32_t>(a) % static_cast<int32_t>(b));
+                    }
+                    DEBUG_PRINT("  REM: result=0x" << hex << result << dec);
+                    break;
+                }
+                case ALUOp::REMU: {
+                    if (b == 0) {
+                        result = a;  // Remainder of division by zero returns the dividend
+                    } else {
+                        result = a % b;
+                    }
+                    DEBUG_PRINT("  REMU: result=0x" << hex << result << dec);
+                    break;
+                }
                 default: 
                     DEBUG_PRINT("  UNKNOWN ALU OP");
                     result = 0;
@@ -643,6 +710,17 @@ class RV32I_5Stage {
                                 case 0x0: alu_op = ALUOp::SUB; break;
                                 case 0x5: alu_op = ALUOp::SRA; break;
                             }
+                        } else if (funct7 == 0x01) {  // M-extension
+                            switch (funct3) {
+                                case 0x0: alu_op = ALUOp::MUL; break;
+                                case 0x1: alu_op = ALUOp::MULH; break;
+                                case 0x2: alu_op = ALUOp::MULHSU; break;
+                                case 0x3: alu_op = ALUOp::MULHU; break;
+                                case 0x4: alu_op = ALUOp::DIV; break;
+                                case 0x5: alu_op = ALUOp::DIVU; break;
+                                case 0x6: alu_op = ALUOp::REM; break;
+                                case 0x7: alu_op = ALUOp::REMU; break;
+                            }
                         }
                         break;
                         
@@ -920,6 +998,17 @@ class RV32I_5Stage {
                             switch (funct3) {
                                 case 0x0: alu_op = ALUOp::SUB; break;
                                 case 0x5: alu_op = ALUOp::SRA; break;
+                            }
+                        } else if (funct7 == 0x01) {  // M-extension
+                            switch (funct3) {
+                                case 0x0: alu_op = ALUOp::MUL; break;
+                                case 0x1: alu_op = ALUOp::MULH; break;
+                                case 0x2: alu_op = ALUOp::MULHSU; break;
+                                case 0x3: alu_op = ALUOp::MULHU; break;
+                                case 0x4: alu_op = ALUOp::DIV; break;
+                                case 0x5: alu_op = ALUOp::DIVU; break;
+                                case 0x6: alu_op = ALUOp::REM; break;
+                                case 0x7: alu_op = ALUOp::REMU; break;
                             }
                         }
                         break;

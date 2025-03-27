@@ -25,6 +25,16 @@ class RV32Assembler {
             opcodeMap["or"] = {0x33, 6, 0x0};
             opcodeMap["and"] = {0x33, 7, 0x0};
             
+            // M-extension (multiplication and division)
+            opcodeMap["mul"] = {0x33, 0, 0x01};
+            opcodeMap["mulh"] = {0x33, 1, 0x01};
+            opcodeMap["mulhsu"] = {0x33, 2, 0x01};
+            opcodeMap["mulhu"] = {0x33, 3, 0x01};
+            opcodeMap["div"] = {0x33, 4, 0x01};
+            opcodeMap["divu"] = {0x33, 5, 0x01};
+            opcodeMap["rem"] = {0x33, 6, 0x01};
+            opcodeMap["remu"] = {0x33, 7, 0x01};
+            
             opcodeMap["addi"] = {0x13, 0, 0x0}; opcodeMap["mv"] = {0x13, 0, 0x0};
             opcodeMap["slti"] = {0x13, 2, 0x0};
             opcodeMap["sltiu"] = {0x13, 3, 0x0};
@@ -302,7 +312,9 @@ class RV32Assembler {
                 
                 if (opcode == "add" || opcode == "sub" || opcode == "sll" || opcode == "slt" || 
                     opcode == "sltu" || opcode == "xor" || opcode == "srl" || opcode == "sra" || 
-                    opcode == "or" || opcode == "and") {
+                    opcode == "or" || opcode == "and" || opcode == "mul" || opcode == "mulh" || 
+                    opcode == "mulhsu" || opcode == "mulhu" || opcode == "div" || opcode == "divu" || 
+                    opcode == "rem" || opcode == "remu") {
                     // R-type
                     int rs2 = parseRegister(op3);
                     instruction |= (rs2 << 20);

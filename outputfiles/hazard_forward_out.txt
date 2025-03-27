@@ -15,7 +15,7 @@ x28: 0x00000000	x29: 0x00000000	x30: 0x00000000	x31: 0x00000000
 
 Pipeline State:
 IF/ID: valid=1 pc=0x18c instr=0x0
-ID/EX: valid=1 pc=0x188 rd=0 alu_op=a
+ID/EX: valid=1 pc=0x188 rd=0 alu_op=12
 EX/MEM: valid=1 alu_result=0x0 rd=0
 MEM/WB: valid=1 alu_result=0x0 rd=0
 
