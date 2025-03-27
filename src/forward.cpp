@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
     // Read input file
     read_input_file(input_file, machine_code, assembly_code);
     
-    // cpu.load_program(machine_code);
+    cpu.load_program(machine_code);
     // int cycles;
     // cout << "\nEnter number of cycles to run: ";
     // cin >> cycles;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
     cpu.run(cycles);
     
     // Display final state
-    // cpu.dump_state();
+    cpu.dump_state();
 
     // Clean the map
     clean_map(cycle_stages);
