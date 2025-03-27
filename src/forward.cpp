@@ -36,45 +36,43 @@ void clean_map(vector <map<int, string>>& cycle_stages){
 }
 
 
-void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<string>& assembly_code){
+void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<string>& assembly_code) {
     ifstream file;
     file.open(file_name);
     char c;
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open the file.\n";// Exit the program with an error code
+        std::cerr << "Failed to open the file.\n";
         exit(1);
     }
 
-    //extract machine code and assembly code from the file
     string machine_code_str;
     string assembly_code_str;
-    string garbage;
     string line;
     while (getline(file, line)) {
         if (line.empty()) {
-            break;
+            continue; // Skip empty lines
         }
+
         istringstream input(line);
-        input >> garbage;
         input >> machine_code_str;
-        cout << machine_code_str << endl;
+
+        // Check if the first token is a valid hexadecimal machine code
         try {
             machine_code.push_back(stoul(machine_code_str, nullptr, 16));
         } catch (const std::invalid_argument& e) {
-            cout << "Invalid input: " << e.what() << endl;
-            return;
+            // If not, treat it as part of the assembly instruction
+            if (!assembly_code.empty()) {
+                assembly_code.back() += " " + line;
+            }
+            continue;
         }
-        // machine_code.push_back(stoul(machine_code_str, nullptr, 16));
-        getline(input, assembly_code_str);
-        do {
-            assembly_code_str = assembly_code_str.substr(1);
-            c = assembly_code_str[0];
-        } while (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z'));
 
+        // Extract the rest of the line as the assembly instruction
+        getline(input, assembly_code_str);
         assembly_code.push_back(assembly_code_str);
-        cout << assembly_code_str << endl;
     }
+
     file.close();
 }
 
@@ -126,7 +124,7 @@ int main(int argc, char* argv[]) {
     cpu.run(cycles);
     
     // Display final state
-    cpu.dump_state();
+    // cpu.dump_state();
 
     // Clean the map
     clean_map(cycle_stages);

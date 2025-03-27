@@ -49,9 +49,9 @@ Removes them.
 ## Known Issues
 
 
-1. `jal ra num`: Links to `PC` instead of `PC + 4` This issue is not present in `jalr`.
-2. The assembler and processor, if given syntatically wrong assembly code, flags possible errors in debug mode, but does not invalidate the code
-3. Incorrect Machine is incorrectly executed and not interrupted. It is the users responsibility to sanely put correct machine code!
+1. The assembler and processor, if given syntatically wrong assembly code, flags possible errors in debug mode, but does not invalidate the code
+2. Incorrect Machine is incorrectly executed and not interrupted. It is the users responsibility to sanely put correct machine code!
+3. When a `BRANCH` or `JUMP` command takes the branch, the processor directly kills the next `IF`, hence, a stall is apparant in the cycle diagram, but direct killing of the process if not shown
 
 ## Design Decisions in Code and Processor
 
@@ -59,7 +59,7 @@ Removes them.
 
 2. Most of the code was used to do case matching, and then assign signals accordingly
 
-3.
+3. 
 
 ## Images
 
