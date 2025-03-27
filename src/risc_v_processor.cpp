@@ -524,7 +524,7 @@ class RV32I_5Stage {
                     // Update IF/ID register
                     if (pc/4 < cycle_stages.size())
                     cycle_stages[pc/4][cycle_count] = "IF";
-                    cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;
+                    // cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;
                     if_id.pc = pc;
                     if_id.instruction = instr;
                     if_id.valid = true;
@@ -542,7 +542,7 @@ class RV32I_5Stage {
                     pc = pending_branch_target;
                     if_id.valid = false;
                     id_needs_flush = false;
-                    cout << "returning from IF branch was taken" << endl;
+                    // cout << "returning from IF branch was taken" << endl;
                     return;
                 }
                   // Check for branch/jump from EX stage
@@ -561,7 +561,7 @@ class RV32I_5Stage {
                         << " from address 0x" << pc << dec);
             if (pc/4 < cycle_stages.size())
             cycle_stages[pc/4][cycle_count] = "IF";
-             cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
+            //  cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
             if_id.instruction = instr;
@@ -578,7 +578,7 @@ class RV32I_5Stage {
             DEBUG_PRINT("STAGE: Instruction Decode");
             
             if (!enable_forwarding) {       
-                cout << "not forwarding " << endl; 
+                // cout << "not forwarding " << endl; 
                 if (!if_id.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
                     id_ex.valid = false;
@@ -589,7 +589,7 @@ class RV32I_5Stage {
                 uint32_t pc_1 = if_id.pc;
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "ID";
-                cout << "pc: " << pc_1 << " stage: " << "ID " << "cycle " << cycle_count << endl ;
+                // cout << "pc: " << pc_1 << " stage: " << "ID " << "cycle " << cycle_count << endl ;
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
                 
                 uint32_t opcode = extract_opcode(instr);
@@ -746,11 +746,11 @@ class RV32I_5Stage {
                 // 1. Instruction in EX stage will write to a register we need
                 // 2. Instruction in MEM stage will write to a register we need from a load
                 bool needs_stall = false;
-                cout << "rs1: " << rs1 << " rs2: " << rs2 << endl;
-                cout << "rd: " << rd << endl;
-                cout << "id_ex.rd: " << id_ex.rd << endl;
-                cout << "ex_mem.rd: " << ex_mem.rd << endl;
-                cout << "id_ex.valid: " << id_ex.valid << endl;
+                // cout << "rs1: " << rs1 << " rs2: " << rs2 << endl;
+                // cout << "rd: " << rd << endl;
+                // cout << "id_ex.rd: " << id_ex.rd << endl;
+                // cout << "ex_mem.rd: " << ex_mem.rd << endl;
+                // cout << "id_ex.valid: " << id_ex.valid << endl;
                 // Check if we need values from registers that are being written to by previous instructions
                 if ((rs1 != 0) && (
                     // EX stage will write to rs1
@@ -869,7 +869,7 @@ class RV32I_5Stage {
                 DEBUG_PRINT("  Decoding instruction: 0x" << hex << instr << dec);
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "ID";
-                cout << "pc: " << pc_1 << "stage: " << "ID" << " cycle " << cycle_count << endl;
+                // cout << "pc: " << pc_1 << "stage: " << "ID" << " cycle " << cycle_count << endl;
                 uint32_t opcode = extract_opcode(instr);
                 uint32_t funct3 = extract_funct3(instr);
                 uint32_t funct7 = extract_funct7(instr);
@@ -1106,7 +1106,7 @@ class RV32I_5Stage {
                 if (!id_ex.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
                     ex_mem.valid = false;
-                    cout << "returning" << endl;
+                    // cout << "returning" << endl;
                     return;
                 }
 
@@ -1117,7 +1117,7 @@ class RV32I_5Stage {
                 if(id_ex.jal){alu_in2 = alu_in2 + 4;}
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "EX";
-                cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
+                // cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
                             << (id_ex.use_pc ? "PC" : "rs1") << "), in2=0x" << alu_in2 
@@ -1146,7 +1146,7 @@ class RV32I_5Stage {
             else {
                 if (!id_ex.valid) {
                     DEBUG_PRINT("  Pipeline stage invalid - skipping");
-                    cout << "returning" << endl;
+                    // cout << "returning" << endl;
                     return;
                 }
                 
@@ -1156,7 +1156,7 @@ class RV32I_5Stage {
                 if(id_ex.jal){alu_in2 = alu_in2 + 4;}
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "EX";
-                cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
+                // cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
                 
                 DEBUG_PRINT("  ALU inputs: in1=0x" << hex << alu_in1 << " (from " 
                             << (id_ex.use_pc ? "PC" : "rs1") << "), in2=0x" << alu_in2 
@@ -1219,7 +1219,7 @@ class RV32I_5Stage {
             uint32_t pc_1  = ex_mem.pc;
             if (pc_1/4 < cycle_stages.size())
             cycle_stages[pc_1/4][cycle_count] = "MEM";
-            cout << "pc: " << pc_1  << " stage: " << "MEM" << " cycle: " << cycle_count << endl;
+            // cout << "pc: " << pc_1  << " stage: " << "MEM" << " cycle: " << cycle_count << endl;
             
             // Memory read
             if (ex_mem.mem_read) {
@@ -1256,7 +1256,7 @@ class RV32I_5Stage {
             uint32_t pc_1  = mem_wb.pc;
             if (pc_1/4 < cycle_stages.size())
             cycle_stages[pc_1/4][cycle_count] = "WB";
-            cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
+            // cout << "pc: " << pc_1  << " stage: " << "WB" << " cycle: " << cycle_count<< endl;
             
             // Write back to register file
             if (mem_wb.reg_write && mem_wb.rd != 0) {

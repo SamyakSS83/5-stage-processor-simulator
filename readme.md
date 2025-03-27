@@ -59,7 +59,7 @@ Removes them.
 
 2. Most of the code was used to do case matching, and then assign signals accordingly
 
-3.
+3. Profusely logging outputs everywhere helped us to resolve and pick out issues quickly 
 
 ## Images
 
