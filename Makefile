@@ -8,10 +8,10 @@ assembly-forwarding: $(SRC_DIR)/assembly-forwarding.cpp
 	$(CXX) $< -o $(BIN_DIR)/assembly-forwarding
 
 noforward: $(SRC_DIR)/noforward.cpp
-	$(CXX) $< -o $(BIN_DIR)/noforward
+	$(CXX) $< -o $(BIN_DIR)/$(SRC_DIR)/noforward
 
 forward: $(SRC_DIR)/forward.cpp
-	$(CXX) $< -o $(BIN_DIR)/forward
+	$(CXX) $< -o $(BIN_DIR)/${SRC_DIR}/forward
 
 assembly-no-forwarding: $(SRC_DIR)/assembly-no-forwarding.cpp
 	$(CXX) $< -o $(BIN_DIR)/assembly-no-forwarding

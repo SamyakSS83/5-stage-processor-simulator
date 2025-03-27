@@ -64,6 +64,3 @@ forwarding
 non_forwarding
 assembly-*
 *forward 
-
-# text files ignore
-.txt 
