@@ -561,7 +561,7 @@ class RV32I_5Stage {
                         << " from address 0x" << pc << dec);
             if (pc/4 < cycle_stages.size())
             cycle_stages[pc/4][cycle_count] = "IF";
-             // cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
+             cout << "pc: " << pc << " stage: " << "IF" << " cycle " << cycle_count << endl;   
             // Update IF/ID register
             if_id.pc = pc;
             if_id.instruction = instr;
