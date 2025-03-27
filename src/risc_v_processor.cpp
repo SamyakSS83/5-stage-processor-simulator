@@ -69,6 +69,7 @@ class RV32I_5Stage {
             bool alu_src;
             bool use_pc;
             bool valid;
+            bool jal;
         };
     
         struct EX_MEM_Reg {
@@ -124,7 +125,7 @@ class RV32I_5Stage {
         void reset_pipeline_regs() {
             DEBUG_PRINT("Resetting pipeline registers");
             if_id = IF_ID_Reg{0, 0, false};
-            id_ex = ID_EX_Reg{0, 0, 0, 0, 0, 0, 0, ALUOp::NONE, BranchCond::FALSE, MemOp::NONE, false, false, false, false, false, false};
+            id_ex = ID_EX_Reg{0, 0, 0, 0, 0, 0, 0, ALUOp::NONE, BranchCond::FALSE, MemOp::NONE, false, false, false, false, false, false,false};
             ex_mem = EX_MEM_Reg{0, 0, 0, 0, MemOp::NONE, false, false, false, false, 0, false};
             mem_wb = MEM_WB_Reg{0, 0, 0, 0, false, false, false};
         }
@@ -605,6 +606,7 @@ class RV32I_5Stage {
                 bool mem_write = false;
                 bool alu_src = false;
                 bool use_pc = false;
+                bool is_jal = false;
                 ALUOp alu_op = ALUOp::NONE;
                 BranchCond branch_cond = BranchCond::FALSE;
                 MemOp mem_op = MemOp::NONE;
@@ -708,6 +710,7 @@ class RV32I_5Stage {
                         alu_op = ALUOp::ADD;
                         branch_cond = BranchCond::TRUE;
                         use_pc = true;
+                        is_jal = true;
                         break;
                         
                     case OPCODE_JALR:  // Jump and Link Register
@@ -850,6 +853,7 @@ class RV32I_5Stage {
                     id_ex.alu_src = alu_src;
                     id_ex.use_pc = use_pc;
                     id_ex.valid = if_id.valid;
+                    id_ex.jal = is_jal;
                 }
             }
             else {
@@ -880,6 +884,7 @@ class RV32I_5Stage {
                 bool mem_write = false;
                 bool alu_src = false;
                 bool use_pc = false;
+                bool is_jal = false;
                 ALUOp alu_op = ALUOp::NONE;
                 BranchCond branch_cond = BranchCond::FALSE;
                 MemOp mem_op = MemOp::NONE;
@@ -983,6 +988,7 @@ class RV32I_5Stage {
                         alu_op = ALUOp::ADD;
                         branch_cond = BranchCond::TRUE;
                         use_pc = true;
+                        is_jal = true;
                         break;
                         
                     case OPCODE_JALR:  // Jump and Link Register
@@ -1085,6 +1091,7 @@ class RV32I_5Stage {
                 id_ex.alu_src = alu_src;
                 id_ex.use_pc = use_pc;
                 id_ex.valid = if_id.valid;
+                id_ex.jal = is_jal;
             }
         }
     
@@ -1105,6 +1112,7 @@ class RV32I_5Stage {
                 // Calculate ALU input
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
+                if(id_ex.jal){alu_in2 = alu_in2 + 4;}
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
@@ -1143,6 +1151,7 @@ class RV32I_5Stage {
                 // Calculate ALU inputs
                 uint32_t alu_in1 = id_ex.use_pc ? id_ex.pc : id_ex.rs1_val;
                 uint32_t alu_in2 = id_ex.alu_src ? id_ex.imm : id_ex.rs2_val;
+                if(id_ex.jal){alu_in2 = alu_in2 + 4;}
                 if (pc_1/4 < cycle_stages.size())
                 cycle_stages[pc_1/4][cycle_count] = "EX";
                 cout << "pc: " << pc_1 << " stage: " << "EX" << " cycle: " << cycle_count << endl;
