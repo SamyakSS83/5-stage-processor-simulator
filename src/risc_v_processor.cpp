@@ -461,6 +461,11 @@ class RV32I_5Stage {
     
         void write_memory(uint32_t addr, uint32_t value, MemOp op) {
             uint32_t aligned_addr = addr & ~0x3;  // Word-align the address
+            if (aligned_addr >= data_memory.size()) {
+                printf("  WRITE ERROR: Address out of bounds");
+                printf("  addr=0x%08X, aligned_addr=0x%08X\n", addr, aligned_addr);
+                return;
+            }
             uint32_t word = data_memory[aligned_addr];
             uint32_t offset = addr & 0x3;
             
