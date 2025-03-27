@@ -3,7 +3,7 @@
 #include"cycle_stages.hpp"
 using namespace std;
  
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
@@ -542,6 +542,8 @@ class RV32I_5Stage {
                     pc = pending_branch_target;
                     if_id.valid = false;
                     id_needs_flush = false;
+                    cout << "returning from IF branch was taken" << endl;
+                    return;
                 }
                   // Check for branch/jump from EX stage
             // if (ex_mem.valid && ex_mem.branch_taken) {

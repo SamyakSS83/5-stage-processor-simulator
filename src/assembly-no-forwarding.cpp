@@ -7,6 +7,9 @@ using namespace std;
 /* RISC-V Assembler */
 vector <map<int, string>> cycle_stages;
 
+#include <iomanip> // For std::setw
+
+
 
 void clean_map(vector <map<int, string>>& cycle_stages){
     // remove leading and trailing "-" from the map :
@@ -33,6 +36,18 @@ void clean_map(vector <map<int, string>>& cycle_stages){
             }
             else break;
         }
+    }
+}
+
+void print_stats(vector <map<int, string>>& cycle_stages, vector<string>& assembly_code){
+
+    for (int i = 0; i < cycle_stages.size(); i++){
+        cout << assembly_code[i] << ";";
+        for (auto const& x : cycle_stages[i])
+        {
+            cout << x.second << ";";
+        }
+        cout << endl;
     }
 }
 
@@ -104,27 +119,10 @@ int main() {
     
     // Display final state
     cpu.dump_state();
-
-    ofstream file;
-    file.open("output_non_forwarding.txt");
-    if (!file.is_open()) {
-        std::cerr << "Failed to open the file.\n";// Exit the program with an error code
-    }
-
     clean_map(cycle_stages);
-     
-    // Display cycle stages
-    for (auto i=0; i< machine_code.size(); i++){
-        cout <<  assembly_lines[i] << ";";
-        file <<  assembly_lines[i] << ";";
-        for (const auto& pair : cycle_stages[i]) {
-            cout << pair.first << " : "<< pair.second << ";";
-            file << pair.second << ";";
-        }
-        file << "\n";
-        cout << endl;
-    }
-    file.close();
+    print_stats(cycle_stages, assembly_lines);
+
+    
     return 0;
 }
 

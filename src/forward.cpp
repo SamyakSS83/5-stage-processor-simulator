@@ -36,8 +36,6 @@ void clean_map(vector <map<int, string>>& cycle_stages){
 }
 
 
-
-
 void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<string>& assembly_code){
     ifstream file;
     file.open(file_name);
@@ -51,15 +49,23 @@ void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<st
     //extract machine code and assembly code from the file
     string machine_code_str;
     string assembly_code_str;
+    string garbage;
     string line;
     while (getline(file, line)) {
         if (line.empty()) {
             break;
         }
         istringstream input(line);
-        
+        input >> garbage;
         input >> machine_code_str;
-        machine_code.push_back(stoul(machine_code_str, nullptr, 16));
+        cout << machine_code_str << endl;
+        try {
+            machine_code.push_back(stoul(machine_code_str, nullptr, 16));
+        } catch (const std::invalid_argument& e) {
+            cout << "Invalid input: " << e.what() << endl;
+            return;
+        }
+        // machine_code.push_back(stoul(machine_code_str, nullptr, 16));
         getline(input, assembly_code_str);
         do {
             assembly_code_str = assembly_code_str.substr(1);
@@ -73,58 +79,40 @@ void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<st
 }
 
 
-void print_map(vector<map<int, string>>& cycle_stages){
+void print_stats(vector<map<int, string>>& cycle_stages){
     for (int i = 0; i < cycle_stages.size(); i++){
         cout << "Instruction " << i << " : ";
         for (auto const& x : cycle_stages[i])
         {
-            cout << x.first << " : " << x.second << ";";
+            cout << x.second << ";";
         }
         cout << endl;
     }
 }
 
-void write_output_file(string file_name, vector<map<int, string>>& cycle_stages, vector<string>& assembly_code){
-    ofstream file1;
-    file1.open(file_name);
-    if (!file1.is_open()) {
-        cerr << "Failed to open the file output file.\n";// Exit the program with an error code
-        exit(1);
+
+int main(int argc, char* argv[]) {
+
+    if (argc < 3) {
+        cout << "Usage: " << argv[0] << " <input_file> " << "<cycle_count>" << endl;
+        return 1;
     }
 
-    // for (int i = 0; i < cycle_stages.size(); i++){
-    //     file1 << setw(8) << "Cycle " << i ;
-    // }
-    // file1 << endl;
+    string input_file = argv[1];
+    int cycles = atoi(argv[2]);
 
-    // Display cycle stages
-    for (int i = 0; i < cycle_stages.size(); i++){
-        file1 << assembly_code[i] << ";";
-        for (auto const& x : cycle_stages[i])
-        {
-            file1 << x.second << ";";
-        }
-        file1 << endl;
-    }
-    file1.close();
-    
-}
-
-
-
-int main() {
     // Initialize processor
     RV32I_5Stage cpu(0x10000, true);
     vector<uint32_t> machine_code;
     vector<string> assembly_code;
 
     // Read input file
-    read_input_file("input.txt", machine_code, assembly_code);
+    read_input_file(input_file, machine_code, assembly_code);
     
-    cpu.load_program(machine_code);
-    int cycles;
-    cout << "\nEnter number of cycles to run: ";
-    cin >> cycles;
+    // cpu.load_program(machine_code);
+    // int cycles;
+    // cout << "\nEnter number of cycles to run: ";
+    // cin >> cycles;
 
     for (int i; i<machine_code.size(); i++){
         map<int, string> row_i;
@@ -141,11 +129,11 @@ int main() {
     cpu.dump_state();
 
     // Clean the map
-    // clean_map(cycle_stages);
-    print_map(cycle_stages);
+    clean_map(cycle_stages);
+    print_stats(cycle_stages);
 
     // Output file
-    write_output_file("output1.txt", cycle_stages, assembly_code);
+    // write_output_file("output1.txt", cycle_stages, assembly_code);
     return 0;
 
 }
