@@ -122,7 +122,7 @@ int main() {
     // Display final state
     cpu.dump_state();
 
-    clean_map(cycle_stages);
+    // clean_map(cycle_stages);
     print_stats(cycle_stages, assembly_lines);
     
     return 0;

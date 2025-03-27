@@ -82,7 +82,7 @@ void print_stats(vector<map<int, string>>& cycle_stages){
         cout << "Instruction " << i << " : ";
         for (auto const& x : cycle_stages[i])
         {
-            cout << x.second << ";";
+            cout << x.first << " : " << x.second << ";";
         }
         cout << endl;
     }
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
     cpu.dump_state();
 
     // Clean the map
-    clean_map(cycle_stages);
+    // clean_map(cycle_stages);
     print_stats(cycle_stages);
 
     // Output file
