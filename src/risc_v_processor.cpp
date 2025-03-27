@@ -3,7 +3,7 @@
 #include"cycle_stages.hpp"
 using namespace std;
  
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
