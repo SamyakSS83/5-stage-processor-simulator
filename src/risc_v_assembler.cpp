@@ -2,7 +2,7 @@
 #include<cstdint>
 using namespace std;
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1 
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[DEBUG] " << msg << endl

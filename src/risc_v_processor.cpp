@@ -3,7 +3,7 @@
 #include"cycle_stages.hpp"
 using namespace std;
  
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 #if DEBUG_MODE
 #define DEBUG_PRINT(msg) cout << "[ DEBUG] " << msg << endl
@@ -709,6 +709,7 @@ class RV32I_5Stage {
                         alu_src = true;
                         alu_op = ALUOp::ADD;
                         branch_cond = BranchCond::TRUE;
+                        use_pc = true;
                         break;
                         
                     case OPCODE_LUI:  // Load Upper Immediate
@@ -983,6 +984,7 @@ class RV32I_5Stage {
                         alu_src = true;
                         alu_op = ALUOp::ADD;
                         branch_cond = BranchCond::TRUE;
+                        use_pc = true;
                         break;
                         
                     case OPCODE_LUI:  // Load Upper Immediate
