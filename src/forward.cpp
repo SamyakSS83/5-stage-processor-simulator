@@ -7,6 +7,17 @@ using namespace std;
 
 vector <map<int, string>> cycle_stages;
 
+std::string trimString(const std::string& str) {
+    size_t start = str.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890()"); // Find first alphabetic character
+    size_t end = str.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890()");    // Find last alphabetic character
+
+    if (start == std::string::npos || end == std::string::npos) {
+        return ""; // No alphabetic characters in the string
+    }
+
+    return str.substr(start, end - start + 1); // Substring between start and end
+}
+
 void clean_map(vector <map<int, string>>& cycle_stages){
     // remove leading and trailing "-" from the map :
     for (int i = 0; i < cycle_stages.size(); i++){
@@ -70,6 +81,7 @@ void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<st
 
         // Extract the rest of the line as the assembly instruction
         getline(input, assembly_code_str);
+        assembly_code_str = trimString(assembly_code_str);
         assembly_code.push_back(assembly_code_str);
     }
 
@@ -77,12 +89,12 @@ void read_input_file(string file_name, vector<uint32_t>& machine_code, vector<st
 }
 
 
-void print_stats(vector<map<int, string>>& cycle_stages){
+void print_stats(vector<map<int, string>>& cycle_stages, vector<string>& assembly_code){
     for (int i = 0; i < cycle_stages.size(); i++){
-        cout << "Instruction " << i << " : ";
+        cout << assembly_code[i] << ";";
         for (auto const& x : cycle_stages[i])
         {
-            cout << x.first << " : " << x.second << ";";
+            cout <<  x.second << ";";
         }
         cout << endl;
     }
@@ -138,7 +150,7 @@ int main(int argc, char* argv[]) {
 
     // Clean the map
     // clean_map(cycle_stages);
-    print_stats(cycle_stages);
+    print_stats(cycle_stages, assembly_code);
 
     // Output file
     // write_output_file("output1.txt", cycle_stages, assembly_code);
