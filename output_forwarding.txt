@@ -1,7 +1,7 @@
-addi x3 x0 5;IF;ID;EX;MEM;WB; ; ; ; ; ; ;
-jal ra, 12; ;IF;ID;EX;-;MEM;WB; ; ; ; ;
-addi x5 x0 0; ; ;IF;ID; ; ; ; ; ; ; ;
-beq x5 x0 12; ; ; ; ; ; ; ; ; ; ; ;
-addi x5 x0 8; ; ; ;IF;ID;EX;MEM;WB; ; ; ;
-jalr x2 4(ra); ; ; ; ;IF;ID;EX;-;MEM;WB; ;
-addi x5 x0 10; ; ; ; ; ; ;IF;ID;EX;MEM;WB;
+addi x3 x0 5;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+jal ra, 12; ;IF;ID;EX;-;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 0; ; ;IF;ID; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+beq x5 x0 12; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 8; ; ; ;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ;
+jalr x2 4(ra); ; ; ; ;IF;ID;EX;-;MEM;WB; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 10; ; ; ; ; ; ;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ;

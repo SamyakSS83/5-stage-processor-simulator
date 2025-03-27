@@ -1035,6 +1035,31 @@ class RV32I_5Stage {
                     }
                 }
                 
+                // Branch evaluation - now in ID stage
+                bool branch_taken = false;
+                uint32_t branch_target = 0;
+                
+                if (branch_cond != BranchCond::FALSE) {
+                    DEBUG_PRINT("  Evaluating branch condition in ID stage");
+                    bool cond_met = evaluate_branch(rs1_val, rs2_val, branch_cond);
+                    
+                    if (cond_met) {
+                        branch_taken = true;
+                        
+                        // Calculate branch target
+                        if (opcode == OPCODE_JALR) {
+                            branch_target = (rs1_val + imm) & ~1; // Clear lowest bit
+                            DEBUG_PRINT("  JALR branch target: 0x" << hex << branch_target << dec);
+                        } else {
+                            branch_target = if_id.pc + imm;
+                            DEBUG_PRINT("  Branch target: 0x" << hex << branch_target << dec);
+                        }
+                        
+                        id_needs_flush = true;
+                        pending_branch_target = branch_target;
+                    }
+                }
+                
                 // Update ID/EX register
                 DEBUG_PRINT("  Updating ID/EX register");
                 id_ex.pc = if_id.pc;
@@ -1331,4 +1356,4 @@ class RV32I_5Stage {
         uint32_t pending_branch_target;
         bool stall_just_resolved; 
         bool enable_forwarding; // to be used when forwarding is enabled 
-    };
+};

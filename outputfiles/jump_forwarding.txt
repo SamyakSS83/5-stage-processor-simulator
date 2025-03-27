@@ -1,0 +1,761 @@
+[ DEBUG] Resetting pipeline registers
+[ DEBUG] Processor initialized with 65536 bytes of memory
+RISC-V 5-stage Pipeline Simulator
+==================================
+Enter RISC-V assembly code, one instruction per line.
+Enter an empty line to finish input.
+
+Enter program:
+1> 2> 3> 4> 5> 6> 7> 8> [DEBUG] Assembling: addi x3 x0 5
+received opcode: addi
+[DEBUG] Assembled instruction: 0x500193
+[DEBUG] Assembling: jal ra, 12
+received opcode: jal
+[DEBUG] Assembled instruction: 0xc000ef
+[DEBUG] Assembling: addi x5 x0 0
+received opcode: addi
+[DEBUG] Assembled instruction: 0x293
+[DEBUG] Assembling: beq x5 x0 12
+received opcode: beq
+[DEBUG] Assembled instruction: 0x28663
+[DEBUG] Assembling: addi x5 x0 8
+received opcode: addi
+[DEBUG] Assembled instruction: 0x800293
+[DEBUG] Assembling: jalr x2 4(ra)
+received opcode: jalr
+[DEBUG] Assembled instruction: 0x408167
+[DEBUG] Assembling: addi x5 x0 10
+received opcode: addi
+[DEBUG] Assembled instruction: 0xa00293
+
+Machine Code:
+0x00500193 (Address: 0x0)
+0x00c000ef (Address: 0x4)
+0x00000293 (Address: 0x8)
+0x00028663 (Address: 0xc)
+0x00800293 (Address: 0x10)
+0x00408167 (Address: 0x14)
+0x00a00293 (Address: 0x18)
+[ DEBUG] Loading program of 7 instructions at address 0x0
+[ DEBUG]   Instruction 0 at 0x0: 0x500193
+[ DEBUG]   Instruction 1 at 0x4: 0xc000ef
+[ DEBUG]   Instruction 2 at 0x8: 0x293
+[ DEBUG]   Instruction 3 at 0xc: 0x28663
+[ DEBUG]   Instruction 4 at 0x10: 0x800293
+[ DEBUG]   Instruction 5 at 0x14: 0x408167
+[ DEBUG]   Instruction 6 at 0x18: 0xa00293
+
+Enter number of cycles to run: Running for 20 cycles
+[ DEBUG] ======= BEGIN CYCLE 1 =======
+[ DEBUG] STAGE: Write Back
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Memory Access
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Execute
+[ DEBUG]   Pipeline stage invalid - skipping
+returning
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x500193 from address 0x0
+pc: 0 stage: IF cycle 0
+[ DEBUG]   PC incremented to 0x4
+[ DEBUG] ======= END CYCLE 1 =======
+
+[ DEBUG] ======= BEGIN CYCLE 2 =======
+[ DEBUG] STAGE: Write Back
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Memory Access
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Execute
+[ DEBUG]   Pipeline stage invalid - skipping
+returning
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x500193
+pc: 0stage: ID cycle 1
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x5
+[ DEBUG]   rd = x3
+[ DEBUG] Decoding instruction type with opcode 0x13
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0x5
+[ DEBUG]   Setting control signals based on opcode 0x13
+[ DEBUG]   I-type ALU instruction
+[ DEBUG] Reading register x5 = 0x0
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0xc000ef from address 0x4
+pc: 4 stage: IF cycle 1
+[ DEBUG]   PC incremented to 0x8
+[ DEBUG] ======= END CYCLE 2 =======
+
+[ DEBUG] ======= BEGIN CYCLE 3 =======
+[ DEBUG] STAGE: Write Back
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Memory Access
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Execute
+pc: 0 stage: EX cycle: 2
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x5 (from imm)
+[ DEBUG] ALU: a=0x0, b=0x5
+[ DEBUG]   ADD: result=0x5
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0xc000ef
+pc: 4stage: ID cycle 2
+[ DEBUG]   opcode = 0x6f
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x12
+[ DEBUG]   rd = x1
+[ DEBUG] Decoding instruction type with opcode 0x6f
+[ DEBUG]   Instruction type: J-type
+[ DEBUG]   J-type immediate: 0xc
+[ DEBUG]   Setting control signals based on opcode 0x6f
+[ DEBUG]   JAL instruction
+[ DEBUG] Reading register x12 = 0x0
+[ DEBUG]   Evaluating branch condition in ID stage
+[ DEBUG] Branch condition check: a=0x0, b=0x0
+[ DEBUG]   TRUE: result=true
+[ DEBUG]   Branch target: 0x10
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x293 from address 0x8
+pc: 8 stage: IF cycle 2
+[ DEBUG]   PC incremented to 0xc
+[ DEBUG] ======= END CYCLE 3 =======
+
+[ DEBUG] ======= BEGIN CYCLE 4 =======
+[ DEBUG] STAGE: Write Back
+[ DEBUG]   Pipeline stage invalid - skipping
+[ DEBUG] STAGE: Memory Access
+pc: 0 stage: MEM cycle: 3
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 4 stage: EX cycle: 3
+[ DEBUG]   ALU inputs: in1=0x4 (from PC), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x4, b=0x0
+[ DEBUG]   ADD: result=0x4
+[ DEBUG]   Evaluating branch condition
+[ DEBUG] Branch condition check: a=0x0, b=0x0
+[ DEBUG]   TRUE: result=true
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   Branch target: 0x10
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x293
+pc: 8stage: ID cycle 3
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x5
+[ DEBUG] Decoding instruction type with opcode 0x13
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0x0
+[ DEBUG]   Setting control signals based on opcode 0x13
+[ DEBUG]   I-type ALU instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Branch taken detected - updating PC to 0x10 and invalidating pipeline
+[ DEBUG]   Fetched instruction: 0x800293 from address 0x10
+pc: 16 stage: IF cycle 3
+[ DEBUG]   PC incremented to 0x14
+[ DEBUG] ======= END CYCLE 4 =======
+
+[ DEBUG] ======= BEGIN CYCLE 5 =======
+[ DEBUG] STAGE: Write Back
+pc: 0 stage: WB cycle: 4
+[ DEBUG]   Writing 0x5 to register x3
+[ DEBUG] Writing register x3 = 0x5
+[ DEBUG] STAGE: Memory Access
+pc: 4 stage: MEM cycle: 4
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+[ DEBUG]   Pipeline stage invalid - skipping
+returning
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x800293
+pc: 16stage: ID cycle 4
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x8
+[ DEBUG]   rd = x5
+[ DEBUG] Decoding instruction type with opcode 0x13
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0x8
+[ DEBUG]   Setting control signals based on opcode 0x13
+[ DEBUG]   I-type ALU instruction
+[ DEBUG] Reading register x8 = 0x0
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x408167 from address 0x14
+pc: 20 stage: IF cycle 4
+[ DEBUG]   PC incremented to 0x18
+[ DEBUG] ======= END CYCLE 5 =======
+
+[ DEBUG] ======= BEGIN CYCLE 6 =======
+[ DEBUG] STAGE: Write Back
+pc: 4 stage: WB cycle: 5
+[ DEBUG]   Writing 0x4 to register x1
+[ DEBUG] Writing register x1 = 0x4
+[ DEBUG] STAGE: Memory Access
+pc: 4 stage: MEM cycle: 5
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 16 stage: EX cycle: 5
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x8 (from imm)
+[ DEBUG] ALU: a=0x0, b=0x8
+[ DEBUG]   ADD: result=0x8
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x408167
+pc: 20stage: ID cycle 5
+[ DEBUG]   opcode = 0x67
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x1
+[ DEBUG]   rs2 = x4
+[ DEBUG]   rd = x2
+[ DEBUG] Decoding instruction type with opcode 0x67
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0x4
+[ DEBUG]   Setting control signals based on opcode 0x67
+[ DEBUG]   JALR instruction
+[ DEBUG] Reading register x1 = 0x4
+[ DEBUG] Reading register x4 = 0x0
+[ DEBUG]   FORWARDING: MEM/WB -> rs1 (x1)
+[ DEBUG]   Evaluating branch condition in ID stage
+[ DEBUG] Branch condition check: a=0x4, b=0x0
+[ DEBUG]   TRUE: result=true
+[ DEBUG]   JALR branch target: 0x8
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0xa00293 from address 0x18
+pc: 24 stage: IF cycle 5
+[ DEBUG]   PC incremented to 0x1c
+[ DEBUG] ======= END CYCLE 6 =======
+
+[ DEBUG] ======= BEGIN CYCLE 7 =======
+[ DEBUG] STAGE: Write Back
+pc: 4 stage: WB cycle: 6
+[ DEBUG]   Writing 0x4 to register x1
+[ DEBUG] Writing register x1 = 0x4
+[ DEBUG] STAGE: Memory Access
+pc: 16 stage: MEM cycle: 6
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 20 stage: EX cycle: 6
+[ DEBUG]   ALU inputs: in1=0x14 (from PC), in2=0x4 (from imm)
+[ DEBUG] ALU: a=0x14, b=0x4
+[ DEBUG]   ADD: result=0x18
+[ DEBUG]   Evaluating branch condition
+[ DEBUG] Branch condition check: a=0x4, b=0x0
+[ DEBUG]   TRUE: result=true
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   Branch target: 0x18
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0xa00293
+pc: 24stage: ID cycle 6
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x10
+[ DEBUG]   rd = x5
+[ DEBUG] Decoding instruction type with opcode 0x13
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0xa
+[ DEBUG]   Setting control signals based on opcode 0x13
+[ DEBUG]   I-type ALU instruction
+[ DEBUG] Reading register x10 = 0x0
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Branch taken detected - updating PC to 0x18 and invalidating pipeline
+[ DEBUG]   Fetched instruction: 0xa00293 from address 0x18
+pc: 24 stage: IF cycle 6
+[ DEBUG]   PC incremented to 0x1c
+[ DEBUG] ======= END CYCLE 7 =======
+
+[ DEBUG] ======= BEGIN CYCLE 8 =======
+[ DEBUG] STAGE: Write Back
+pc: 16 stage: WB cycle: 7
+[ DEBUG]   Writing 0x8 to register x5
+[ DEBUG] Writing register x5 = 0x8
+[ DEBUG] STAGE: Memory Access
+pc: 20 stage: MEM cycle: 7
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+[ DEBUG]   Pipeline stage invalid - skipping
+returning
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0xa00293
+pc: 24stage: ID cycle 7
+[ DEBUG]   opcode = 0x13
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x10
+[ DEBUG]   rd = x5
+[ DEBUG] Decoding instruction type with opcode 0x13
+[ DEBUG]   Instruction type: I-type
+[ DEBUG]   I-type immediate: 0xa
+[ DEBUG]   Setting control signals based on opcode 0x13
+[ DEBUG]   I-type ALU instruction
+[ DEBUG] Reading register x10 = 0x0
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x1c
+pc: 28 stage: IF cycle 7
+[ DEBUG]   PC incremented to 0x20
+[ DEBUG] ======= END CYCLE 8 =======
+
+[ DEBUG] ======= BEGIN CYCLE 9 =======
+[ DEBUG] STAGE: Write Back
+pc: 20 stage: WB cycle: 8
+[ DEBUG]   Writing 0x18 to register x2
+[ DEBUG] Writing register x2 = 0x18
+[ DEBUG] STAGE: Memory Access
+pc: 20 stage: MEM cycle: 8
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 24 stage: EX cycle: 8
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0xa (from imm)
+[ DEBUG] ALU: a=0x0, b=0xa
+[ DEBUG]   ADD: result=0xa
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 28stage: ID cycle 8
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x20
+pc: 32 stage: IF cycle 8
+[ DEBUG]   PC incremented to 0x24
+[ DEBUG] ======= END CYCLE 9 =======
+
+[ DEBUG] ======= BEGIN CYCLE 10 =======
+[ DEBUG] STAGE: Write Back
+pc: 20 stage: WB cycle: 9
+[ DEBUG]   Writing 0x18 to register x2
+[ DEBUG] Writing register x2 = 0x18
+[ DEBUG] STAGE: Memory Access
+pc: 24 stage: MEM cycle: 9
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 28 stage: EX cycle: 9
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 32stage: ID cycle 9
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x24
+pc: 36 stage: IF cycle 9
+[ DEBUG]   PC incremented to 0x28
+[ DEBUG] ======= END CYCLE 10 =======
+
+[ DEBUG] ======= BEGIN CYCLE 11 =======
+[ DEBUG] STAGE: Write Back
+pc: 24 stage: WB cycle: 10
+[ DEBUG]   Writing 0xa to register x5
+[ DEBUG] Writing register x5 = 0xa
+[ DEBUG] STAGE: Memory Access
+pc: 28 stage: MEM cycle: 10
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 32 stage: EX cycle: 10
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 36stage: ID cycle 10
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x28
+pc: 40 stage: IF cycle 10
+[ DEBUG]   PC incremented to 0x2c
+[ DEBUG] ======= END CYCLE 11 =======
+
+[ DEBUG] ======= BEGIN CYCLE 12 =======
+[ DEBUG] STAGE: Write Back
+pc: 28 stage: WB cycle: 11
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 32 stage: MEM cycle: 11
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 36 stage: EX cycle: 11
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 40stage: ID cycle 11
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x2c
+pc: 44 stage: IF cycle 11
+[ DEBUG]   PC incremented to 0x30
+[ DEBUG] ======= END CYCLE 12 =======
+
+[ DEBUG] ======= BEGIN CYCLE 13 =======
+[ DEBUG] STAGE: Write Back
+pc: 32 stage: WB cycle: 12
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 36 stage: MEM cycle: 12
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 40 stage: EX cycle: 12
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 44stage: ID cycle 12
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x30
+pc: 48 stage: IF cycle 12
+[ DEBUG]   PC incremented to 0x34
+[ DEBUG] ======= END CYCLE 13 =======
+
+[ DEBUG] ======= BEGIN CYCLE 14 =======
+[ DEBUG] STAGE: Write Back
+pc: 36 stage: WB cycle: 13
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 40 stage: MEM cycle: 13
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 44 stage: EX cycle: 13
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 48stage: ID cycle 13
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x34
+pc: 52 stage: IF cycle 13
+[ DEBUG]   PC incremented to 0x38
+[ DEBUG] ======= END CYCLE 14 =======
+
+[ DEBUG] ======= BEGIN CYCLE 15 =======
+[ DEBUG] STAGE: Write Back
+pc: 40 stage: WB cycle: 14
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 44 stage: MEM cycle: 14
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 48 stage: EX cycle: 14
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 52stage: ID cycle 14
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x38
+pc: 56 stage: IF cycle 14
+[ DEBUG]   PC incremented to 0x3c
+[ DEBUG] ======= END CYCLE 15 =======
+
+[ DEBUG] ======= BEGIN CYCLE 16 =======
+[ DEBUG] STAGE: Write Back
+pc: 44 stage: WB cycle: 15
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 48 stage: MEM cycle: 15
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 52 stage: EX cycle: 15
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 56stage: ID cycle 15
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x3c
+pc: 60 stage: IF cycle 15
+[ DEBUG]   PC incremented to 0x40
+[ DEBUG] ======= END CYCLE 16 =======
+
+[ DEBUG] ======= BEGIN CYCLE 17 =======
+[ DEBUG] STAGE: Write Back
+pc: 48 stage: WB cycle: 16
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 52 stage: MEM cycle: 16
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 56 stage: EX cycle: 16
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 60stage: ID cycle 16
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x40
+pc: 64 stage: IF cycle 16
+[ DEBUG]   PC incremented to 0x44
+[ DEBUG] ======= END CYCLE 17 =======
+
+[ DEBUG] ======= BEGIN CYCLE 18 =======
+[ DEBUG] STAGE: Write Back
+pc: 52 stage: WB cycle: 17
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 56 stage: MEM cycle: 17
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 60 stage: EX cycle: 17
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 64stage: ID cycle 17
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x44
+pc: 68 stage: IF cycle 17
+[ DEBUG]   PC incremented to 0x48
+[ DEBUG] ======= END CYCLE 18 =======
+
+[ DEBUG] ======= BEGIN CYCLE 19 =======
+[ DEBUG] STAGE: Write Back
+pc: 56 stage: WB cycle: 18
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 60 stage: MEM cycle: 18
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 64 stage: EX cycle: 18
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 68stage: ID cycle 18
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x48
+pc: 72 stage: IF cycle 18
+[ DEBUG]   PC incremented to 0x4c
+[ DEBUG] ======= END CYCLE 19 =======
+
+[ DEBUG] ======= BEGIN CYCLE 20 =======
+[ DEBUG] STAGE: Write Back
+pc: 60 stage: WB cycle: 19
+[ DEBUG]   No register write
+[ DEBUG] STAGE: Memory Access
+pc: 64 stage: MEM cycle: 19
+[ DEBUG]   Updating MEM/WB register
+[ DEBUG] STAGE: Execute
+pc: 68 stage: EX cycle: 19
+[ DEBUG]   ALU inputs: in1=0x0 (from rs1), in2=0x0 (from rs2)
+[ DEBUG] ALU: a=0x0, b=0x0
+[ DEBUG]   UNKNOWN ALU OP
+[ DEBUG]   Updating EX/MEM register
+[ DEBUG] STAGE: Instruction Decode
+[ DEBUG]   Decoding instruction: 0x0
+pc: 72stage: ID cycle 19
+[ DEBUG]   opcode = 0x0
+[ DEBUG]   funct3 = 0x0
+[ DEBUG]   funct7 = 0x0
+[ DEBUG]   rs1 = x0
+[ DEBUG]   rs2 = x0
+[ DEBUG]   rd = x0
+[ DEBUG] Decoding instruction type with opcode 0x0
+[ DEBUG]   Instruction type: UNKNOWN
+[ DEBUG]   Unknown immediate type
+[ DEBUG]   Setting control signals based on opcode 0x0
+[ DEBUG]   Unknown instruction
+[ DEBUG]   Updating ID/EX register
+[ DEBUG] STAGE: Instruction Fetch
+[ DEBUG]   Fetched instruction: 0x0 from address 0x4c
+pc: 76 stage: IF cycle 19
+[ DEBUG]   PC incremented to 0x50
+[ DEBUG] ======= END CYCLE 20 =======
+
+Execution completed after 20 cycles
+======= PROCESSOR STATE =======
+Cycle count: 20
+PC: 0x50
+
+Registers:
+x00: 0x00000000	x01: 0x00000004	x02: 0x00000018	x03: 0x00000005
+x04: 0x00000000	x05: 0x0000000a	x06: 0x00000000	x07: 0x00000000
+x08: 0x00000000	x09: 0x00000000	x10: 0x00000000	x11: 0x00000000
+x12: 0x00000000	x13: 0x00000000	x14: 0x00000000	x15: 0x00000000
+x16: 0x00000000	x17: 0x00000000	x18: 0x00000000	x19: 0x00000000
+x20: 0x00000000	x21: 0x00000000	x22: 0x00000000	x23: 0x00000000
+x24: 0x00000000	x25: 0x00000000	x26: 0x00000000	x27: 0x00000000
+x28: 0x00000000	x29: 0x00000000	x30: 0x00000000	x31: 0x00000000
+
+Pipeline State:
+IF/ID: valid=1 pc=0x4c instr=0x0
+ID/EX: valid=1 pc=0x48 rd=0 alu_op=a
+EX/MEM: valid=1 alu_result=0x0 rd=0
+MEM/WB: valid=1 alu_result=0x0 rd=0
+
+Data Memory (non-zero values):
+===============================
+addi x3 x0 5;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+jal ra, 12; ;IF;ID;EX;-;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 0; ; ;IF;ID; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+beq x5 x0 12; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 8; ; ; ;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ; ; ; ;
+jalr x2 4(ra); ; ; ; ;IF;ID;EX;-;MEM;WB; ; ; ; ; ; ; ; ; ; ;
+addi x5 x0 10; ; ; ; ; ; ;IF;ID;EX;MEM;WB; ; ; ; ; ; ; ; ; ;
