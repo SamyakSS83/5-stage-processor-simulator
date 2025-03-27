@@ -55,6 +55,24 @@ Removes them.
 
 ## Design Decisions in Code and Processor
 
+1. Made helper functions that are then abstracted in the 5 stages which is abstracted to the processor
+
+2. Most of the code was used to do case matching, and then assign signals accordingly
+
+3.
+
+## Images
+
+Below are the images showcasing the processor's behavior:
+
+- **Forwarding Enabled**  
+    ![Forwarding Enabled](assets/forward.png)
+
+- **No Forwarding**  
+    ![No Forwarding](assets/noforward.png)
+
+
+
 
 
 
