@@ -55,7 +55,7 @@ Removes them.
 
 ## Design Decisions in Code and Processor
 
-1. Made helper functions that are then abstracted in the 5 stages which is abstracted to the processor
+1. We made helper functions for primary operations, duch as reading, writing, op-code decomposition, memory operations etc. that are then abstracted into the 5 stages which is abstracted to the processor
 
 2. Most of the code was used to do case matching, and then assign signals accordingly
 
