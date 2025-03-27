@@ -61,6 +61,8 @@ Removes them.
 
 3. Profusely logging outputs everywhere helped us to resolve and pick out issues quickly 
 
+4. We also used bash scripts to ease the tedious task of getting output for each input file and stroing it into its specified directory
+
 ## Images
 
 Below are the images showcasing the processor's behavior:
